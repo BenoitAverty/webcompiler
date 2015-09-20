@@ -1,6 +1,0 @@
-/home/benoit/webcompiler/src/main/java/com/baverty/webcompiler/controllers/ProgramController.java
-/home/benoit/webcompiler/src/main/java/com/baverty/webcompiler/domain/Program.java
-/home/benoit/webcompiler/src/main/java/com/baverty/webcompiler/WebcompilerApplication.java
-/home/benoit/webcompiler/src/main/java/com/baverty/webcompiler/services/ExecutionService.java
-/home/benoit/webcompiler/src/main/java/com/baverty/webcompiler/repositories/ProgramRepository.java
-/home/benoit/webcompiler/src/main/java/com/baverty/webcompiler/services/CompilationService.java
