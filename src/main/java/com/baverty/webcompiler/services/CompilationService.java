@@ -11,13 +11,15 @@ import com.baverty.webcompiler.repositories.ProgramRepository;
 @Service
 public class CompilationService {
 
-	@Inject
-	ProgramRepository programRepository;
+	@Inject 
+	public ProgramRepository programRepository;
 	
 	@Async
 	public void compile(Program p) {
 		try {
+			System.out.println("Starting sleeping");
 			Thread.sleep(20000);
+			System.out.println("Sleep end");
 			p.setStatus("Compiled");
 			programRepository.save(p);
 			
