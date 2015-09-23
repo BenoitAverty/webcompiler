@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.command.ExecCreateCmdResponse;
+import com.github.dockerjava.api.command.StartContainerCmd;
 import com.github.dockerjava.core.DockerClientBuilder;
 
 @Service
@@ -40,7 +42,7 @@ public class DockerManagementService {
 	public String getContainer() {
 		
 		CreateContainerResponse container = docker.createContainerCmd("frolvlad/alpine-gcc")
-				   .withCmd("touch", "/test")
+				   .withCmd("tail", "-f", "/dev/null")
 				   .exec();
 		
 		containers.put(container.getId(), container);
@@ -49,8 +51,11 @@ public class DockerManagementService {
 	}
 
 	public void compile(String sourceCode, String containerId) {
-		// TODO Auto-generated method stub
+		docker.startContainerCmd(containerId).exec();
 		
+		//TODO using volumes...
+		
+		docker.stopContainerCmd(containerId).exec();		
 	}
 	
 	@PreDestroy
