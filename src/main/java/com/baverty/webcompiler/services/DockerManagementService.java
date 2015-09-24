@@ -1,5 +1,9 @@
 package com.baverty.webcompiler.services;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +15,7 @@ import org.springframework.stereotype.Service;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
-import com.github.dockerjava.api.command.StartContainerCmd;
+import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.core.DockerClientBuilder;
 
 @Service
@@ -43,6 +47,9 @@ public class DockerManagementService {
 		
 		CreateContainerResponse container = docker.createContainerCmd("frolvlad/alpine-gcc")
 				   .withCmd("tail", "-f", "/dev/null")
+				   .withExposedPorts(new ExposedPort(8080))
+				   .withPublishAllPorts(true)
+				   .withTty(true)
 				   .exec();
 		
 		containers.put(container.getId(), container);
@@ -51,16 +58,48 @@ public class DockerManagementService {
 	}
 
 	public void compile(String sourceCode, String containerId) {
+		// Start the container
 		docker.startContainerCmd(containerId).exec();
 		
-		//TODO using volumes...
+		// Transfer the sourcecode to the container
+		this.transferSourceCode(sourceCode, containerId);	
+	}
+	
+	private void transferSourceCode(String sourceCode, String containerId) {
+		// Create the command to listen to the file
+		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId)
+											.withCmd("/bin/sh", "-c", "nc -l -p 8080 > /root/test")
+											.withTty()
+											.exec();
 		
-		docker.stopContainerCmd(containerId).exec();		
+		// Start listening to inbound connections
+		docker.execStartCmd(containerId).withExecId(cmd.getId()).withDetach().exec();
+		
+		// Retrieve the port on the host machine		
+		Integer hostPort = docker.inspectContainerCmd(containerId).exec()
+				.getNetworkSettings().getPorts().getBindings().get(new ExposedPort(8080))[0].getHostPort();
+		
+		// Connect to the port and send sourcecode
+		try {
+			Socket s = new Socket("localhost", hostPort);
+			OutputStreamWriter os = new OutputStreamWriter(s.getOutputStream());
+			os.write(sourceCode);
+			os.flush();
+			s.close();
+			
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@PreDestroy
 	private void removeContainers() {
 		for (String containerId : containers.keySet()) {
+			docker.stopContainerCmd(containerId).exec();
 			docker.removeContainerCmd(containerId).exec();
 		}
 	}
