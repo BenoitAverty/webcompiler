@@ -9,6 +9,11 @@ import com.baverty.webcompiler.domain.Program;
 import com.baverty.webcompiler.domain.enumtypes.ProgramStatus;
 import com.baverty.webcompiler.repositories.ProgramRepository;
 
+/**
+ * Service used to compile programs.
+ * 
+ * @author baverty
+ */
 @Service
 public class CompilationService {
 
@@ -32,7 +37,7 @@ public class CompilationService {
 	 * <ol>
 	 * <li>Retrieve a suitable Docker container</li>
 	 * <li>Compile the source code in the container</li>
-	 * <li>Set the program status to COMPILED once finished</li>
+	 * <li>Set the program status to COMPILED once finished (or COMPILE_ERROR if failure)</li>
 	 * </ol>
 	 * 
 	 * This method is asynchronous. It starts the compilation and it's up to the
@@ -43,12 +48,19 @@ public class CompilationService {
 	 */
 	@Async
 	public void compile(Program p) {
+		// Get a container suitable for this program
 		String containerId = dockerManagementService.getContainer();
-
 		p.setContainerId(containerId);
-		dockerManagementService.compile(p.getSourceCode(), p.getContainerId());
-
-		p.setStatus(ProgramStatus.COMPILED);
+		
+		// Try to compile the program using this container.
+		try {
+			dockerManagementService.transferSourceCode(p.getSourceCode(), containerId);
+			dockerManagementService.compile(p.getContainerId());
+			p.setStatus(ProgramStatus.COMPILED);
+		}
+		catch(Exception e) {
+			p.setStatus(ProgramStatus.COMPILE_ERROR);
+		}
 		programRepository.save(p);
 	}
 

@@ -28,7 +28,7 @@ public class ProgramController {
 	@Inject
 	private CompilationService compilationService;
 	
-	/***
+	/**
 	 * REST service to create a compiled program.
 	 * @param body The body of the request should contain the source code to compile.
 	 * @return A unique ID representing the program in the system. The id will be used for all further interactions with the API.
