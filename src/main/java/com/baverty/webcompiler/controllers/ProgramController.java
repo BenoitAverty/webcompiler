@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.baverty.webcompiler.controllers.responseobjects.ProgramStatusResponse;
 import com.baverty.webcompiler.domain.Program;
 import com.baverty.webcompiler.domain.enumtypes.ProgramStatus;
 import com.baverty.webcompiler.repositories.ProgramRepository;
@@ -29,7 +30,10 @@ public class ProgramController {
 	private CompilationService compilationService;
 	
 	/**
-	 * REST service to create a compiled program.
+	 * REST service used to create a program.
+	 * 
+	 * If the program needs to be compiled, the compilation will be launched asynchronously by this webservice.
+	 * 
 	 * @param body The body of the request should contain the source code to compile.
 	 * @return A unique ID representing the program in the system. The id will be used for all further interactions with the API.
 	 */
@@ -48,9 +52,22 @@ public class ProgramController {
 		
 	}
 	
+	/**
+	 * REST service used to retrieve the status of a program.
+	 * 
+	 * @param tid The tid of the program.
+	 * @return A structure containing the status and information related to the status.
+	 */
 	@RequestMapping(value = "/program/{tid}/status", method=RequestMethod.GET)
-	public ProgramStatus getProgramStatus(@PathVariable Long tid) {
+	public ProgramStatusResponse getProgramStatus(@PathVariable Long tid) {
 		
-		return programRepository.findByTid(tid).getStatus();
+		ProgramStatusResponse response = new ProgramStatusResponse();
+		
+		Program p = programRepository.findByTid(tid);
+		
+		response.status = p.getStatus();
+		response.compilationOutput = p.getCompilationOutput();
+		
+		return response;
 	}
 }
