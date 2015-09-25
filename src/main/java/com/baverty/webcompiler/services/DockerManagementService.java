@@ -3,7 +3,6 @@ package com.baverty.webcompiler.services;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -155,9 +154,31 @@ public class DockerManagementService {
 		try {
 			return IOUtils.toString(cmdStream).trim().equals("/home/program.exe");
 		} catch (IOException e) {
-			return false;
+			throw new RuntimeException(e);
 		}
 
+	}
+	
+
+	/**
+	 * Execute a program on a container.
+	 * 
+	 * @param containerId the container where the program to run is located
+	 * @return the output of the program
+	 */
+	public String execute(String containerId) {
+		startContainer(containerId);
+		
+		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId).withCmd("/bin/sh", "-c", "/home/program.exe 2>&1").withAttachStdout().exec();
+		
+		InputStream cmdStream = docker.execStartCmd(containerId).withExecId(cmd.getId()).exec();
+		
+		try {
+			return IOUtils.toString(cmdStream);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
 	}
 
 	/**

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.baverty.webcompiler.domain.Program;
 import com.baverty.webcompiler.domain.enumtypes.ProgramStatus;
-import com.baverty.webcompiler.repositories.ProgramRepository;
+import com.baverty.webcompiler.repositories.ProgramsRepository;
 
 /**
  * Service used to compile programs.
@@ -21,12 +21,12 @@ public class CompilationService {
 	 * Repository for Program persistence.
 	 */
 	@Inject
-	private ProgramRepository programRepository;
+	private ProgramsRepository programRepository;
 
 	/**
 	 * Docker management service.
 	 * 
-	 * Used to get containers in which to compile programs
+	 * Used to get interact with containers in which to compile programs
 	 */
 	@Inject
 	private DockerManagementService dockerManagementService;
