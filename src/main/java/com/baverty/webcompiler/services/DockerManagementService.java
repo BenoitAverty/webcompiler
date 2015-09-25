@@ -1,17 +1,18 @@
 package com.baverty.webcompiler.services;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.CharBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
 import com.github.dockerjava.api.DockerClient;
@@ -19,7 +20,6 @@ import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.jaxrs.ExecStartCmdExec;
 
 /**
  * Service used for all the interactions of the application with docker
@@ -93,6 +93,7 @@ public class DockerManagementService {
 		try {
 			Socket s = new Socket("localhost", hostPort);
 			OutputStreamWriter os = new OutputStreamWriter(s.getOutputStream());
+			os.write(sourceCode);
 			os.flush();
 			s.close();
 
@@ -113,8 +114,9 @@ public class DockerManagementService {
 	 * 
 	 * @param containerId
 	 *            the ID of the container in which to compile the code.
+	 * @return TODO
 	 */
-	public void compile(String containerId) {
+	public String compile(String containerId) {
 
 		startContainer(containerId);
 
@@ -122,8 +124,17 @@ public class DockerManagementService {
 		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId)
 				.withCmd("gcc", "-o", "/home/program.exe", "/home/program.c").withTty().exec();
 
-		InputStreamReader cmdOut = new InputStreamReader(
-				docker.execStartCmd(containerId).withExecId(cmd.getId()).withDetach().exec());
+		InputStream cmdStream = docker.execStartCmd(containerId).withExecId(cmd.getId()).exec();
+		
+		try {
+			String result = IOUtils.toString(cmdStream, "utf-8");
+			cmdStream.close();
+			return result;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "failure";
+		}
 	}
 
 	/**

@@ -54,4 +54,10 @@ public class Program implements Serializable {
 	@Column
 	private String sourceCode;
 	
+	/**
+	 * Result of the compilation of the program.
+	 */
+	@Column
+	private String compilationResult;
+	
 }
