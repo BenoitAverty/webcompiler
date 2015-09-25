@@ -122,10 +122,11 @@ public class DockerManagementService {
 
 		// Compile
 		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId)
-				.withCmd("gcc", "-o", "/home/program.exe", "/home/program.c").withTty().exec();
+				.withCmd("gcc", "-o", "/home/program.exe", "/home/program.c").withTty().withAttachStdout()
+				.withAttachStderr().exec();
 
 		InputStream cmdStream = docker.execStartCmd(containerId).withExecId(cmd.getId()).exec();
-		
+
 		try {
 			String result = IOUtils.toString(cmdStream, "utf-8");
 			cmdStream.close();
@@ -135,6 +136,28 @@ public class DockerManagementService {
 			e.printStackTrace();
 			return "failure";
 		}
+	}
+
+	/**
+	 * Check that the program is present on the container.
+	 * 
+	 * @param containerId
+	 *            the container where the program should be
+	 */
+	public boolean checkProgramOnContainer(String containerId) {
+		startContainer(containerId);
+
+		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId).withCmd("ls", "/home/program.exe")
+				.withAttachStdout().exec();
+		
+		InputStream cmdStream = docker.execStartCmd(containerId).withExecId(cmd.getId()).exec();
+		
+		try {
+			return IOUtils.toString(cmdStream).trim().equals("/home/program.exe");
+		} catch (IOException e) {
+			return false;
+		}
+
 	}
 
 	/**

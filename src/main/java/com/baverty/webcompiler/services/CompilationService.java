@@ -53,16 +53,18 @@ public class CompilationService {
 		p.setContainerId(containerId);
 		
 		// Try to compile the program using this container.
-		try {
-			dockerManagementService.transferSourceCode(p.getSourceCode(), containerId);
-			String compileMessage = dockerManagementService.compile(p.getContainerId());
-			System.out.println(compileMessage);
-			p.setCompilationResult(compileMessage);
+		dockerManagementService.transferSourceCode(p.getSourceCode(), containerId);
+		String compilationOutput = dockerManagementService.compile(p.getContainerId());
+		p.setCompilationOutput(compilationOutput);
+		
+		// Check that the compilation was successful
+		if(dockerManagementService.checkProgramOnContainer(containerId)) {
 			p.setStatus(ProgramStatus.COMPILED);
 		}
-		catch(Exception e) {
+		else {
 			p.setStatus(ProgramStatus.COMPILE_ERROR);
 		}
+		
 		programRepository.save(p);
 	}
 

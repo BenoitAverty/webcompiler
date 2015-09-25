@@ -58,6 +58,6 @@ public class Program implements Serializable {
 	 * Result of the compilation of the program.
 	 */
 	@Column
-	private String compilationResult;
+	private String compilationOutput;
 	
 }
