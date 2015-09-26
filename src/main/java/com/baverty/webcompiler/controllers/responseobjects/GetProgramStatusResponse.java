@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  *
  */
 @JsonInclude(Include.NON_EMPTY)
-public class ProgramStatusResponse {
+public class GetProgramStatusResponse {
 	public ProgramStatus status;
 	public String compilationOutput;
 }

@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.baverty.webcompiler.controllers.responseobjects.ProgramCreationResponse;
-import com.baverty.webcompiler.controllers.responseobjects.ProgramExecutionResponse;
-import com.baverty.webcompiler.controllers.responseobjects.ProgramStatusResponse;
+import com.baverty.webcompiler.controllers.responseobjects.PostProgramResponse;
+import com.baverty.webcompiler.controllers.responseobjects.PostProgramExecutionResponse;
+import com.baverty.webcompiler.controllers.responseobjects.GetProgramStatusResponse;
 import com.baverty.webcompiler.controllers.responseobjects.RequestStatus;
 import com.baverty.webcompiler.domain.Execution;
 import com.baverty.webcompiler.domain.Program;
@@ -61,7 +61,7 @@ public class ProgramsController {
 	 *         be used for all further interactions with the API
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/programs")
-	public ProgramCreationResponse createProgram(@RequestBody String body) {
+	public PostProgramResponse postProgram(@RequestBody String body) {
 
 		Program p = new Program();
 
@@ -71,7 +71,7 @@ public class ProgramsController {
 
 		compilationService.compile(p);
 
-		ProgramCreationResponse response = new ProgramCreationResponse();
+		PostProgramResponse response = new PostProgramResponse();
 		response.status = RequestStatus.OK;
 		response.programId = p.getTid();
 		
@@ -88,11 +88,11 @@ public class ProgramsController {
 	 *         status
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = "/programs/{tid}/status")
-	public ProgramStatusResponse getProgramStatus(@PathVariable Long tid) {
+	public GetProgramStatusResponse getProgramStatus(@PathVariable Long tid) {
 
 		Program p = programsRepository.findOne(tid);
 
-		ProgramStatusResponse response = new ProgramStatusResponse();
+		GetProgramStatusResponse response = new GetProgramStatusResponse();
 		response.status = p.getStatus();
 		response.compilationOutput = p.getCompilationOutput();
 
@@ -107,11 +107,11 @@ public class ProgramsController {
 	 * @return the ID of the execution launched
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/programs/{tid}/executions")
-	public ProgramExecutionResponse executeProgram(@PathVariable Long tid) {
+	public PostProgramExecutionResponse postProgramExecution(@PathVariable Long tid) {
 
 		Program p = programsRepository.findOne(tid);
 
-		ProgramExecutionResponse response = new ProgramExecutionResponse();
+		PostProgramExecutionResponse response = new PostProgramExecutionResponse();
 		
 		if(p.getStatus() == ProgramStatus.COMPILED) {
 			
