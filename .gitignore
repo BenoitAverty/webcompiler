@@ -6,3 +6,6 @@
 # Maven
 log/
 target/
+
+# h2
+src/main/resources/.h2.server.properties
