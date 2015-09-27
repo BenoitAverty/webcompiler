@@ -1,5 +1,5 @@
 angular.module('webcompiler', [])
-	.controller('TestController', function() {
+	.controller('TestController', function($scope) {
 		$scope.thing = "world!";
 	})
 ;
