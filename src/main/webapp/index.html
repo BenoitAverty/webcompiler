@@ -1,21 +1,39 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-	<title>Webcompiler</title>
-	
+	<title>ab0's Webcompiler</title>
+
 	<!-- app -->
 	<link rel="stylesheet" href="css/main.css">
-	
+
 	<!-- Bootstrap -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-	
+
 </head>
 <body ng-app="webcompiler">
-	<div ng-controller="TestController">
-		<h1>Hello, {{thing}}!</h1>
-	</div>
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header"><a class="navbar-brand" href="index.html">ab0's Webcompiler</a></div>
+			<ul class="nav navbar-nav">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="#about">About</a></li>
+			</ul>
+		</div>
+	</nav>
 
+	<div class="container" role="main">
+		<div class="page-header"><h1>Compile C online</h1></div>
+
+		<div id="compiler" ng-controller="CompilerController">
+			<form>
+				<textarea class="form-control" name="sourcecode" placeholder="Type sourcecode here..." rows="20" ng-model="sourcecode"></textarea>
+			</form>
+		</div>
+
+
+
+	</div>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>

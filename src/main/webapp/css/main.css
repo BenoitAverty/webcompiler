@@ -1,0 +1,10 @@
+body {
+    padding-top: 70px;
+}
+
+/**
+ * Editor formatting
+ */
+textarea[name=sourcecode] {
+    resize: vertical;
+}
