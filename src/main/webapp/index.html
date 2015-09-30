@@ -28,6 +28,23 @@
 		<div id="compiler" ng-controller="CompilerController">
 			<form>
 				<textarea class="form-control" name="sourcecode" placeholder="Type sourcecode here..." rows="20" ng-model="sourcecode"></textarea>
+
+				<div class="row">
+					<div class="col-md-6">
+						<select class="form-control">
+							<option>C &mdash; gcc4.9.2</option>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<div class="btn-group">
+							<button class="btn btn-default">Reset</button><button class="btn btn-primary">Compile</button>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<p>&nbsp;</p>
+					</div>
+				</div>
+
 			</form>
 		</div>
 

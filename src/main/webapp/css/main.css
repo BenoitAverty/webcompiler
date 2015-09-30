@@ -7,4 +7,5 @@ body {
  */
 textarea[name=sourcecode] {
     resize: vertical;
+    margin-bottom: 1em;
 }
