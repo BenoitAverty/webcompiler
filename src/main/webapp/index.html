@@ -13,39 +13,78 @@
 </head>
 <body ng-app="webcompiler">
 	<nav class="navbar navbar-inverse navbar-fixed-top">
-		<div class="container">
-			<div class="navbar-header"><a class="navbar-brand" href="index.html">ab0's Webcompiler</a></div>
-			<ul class="nav navbar-nav">
-				<li><a href="index.html">Home</a></li>
-				<li><a href="#about">About</a></li>
-			</ul>
-		</div>
-	</nav>
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">ab0's Webcompiler</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
 
 	<div class="container" role="main">
 		<div class="page-header"><h1>Compile C online</h1></div>
 
-		<div id="compiler" ng-controller="CompilerController">
+		<div id="compiler" ng-controller="CompilerController as compilerCtrl">
 			<form>
-				<textarea class="form-control" name="sourcecode" placeholder="Type sourcecode here..." rows="20" ng-model="sourcecode"></textarea>
-
 				<div class="row">
-					<div class="col-md-6">
-						<select class="form-control">
+					<div class="col-md-4">
+						<select class="form-control" ng-disabled="compilerCtrl.working">
 							<option>C &mdash; gcc4.9.2</option>
 						</select>
 					</div>
-					<div class="col-md-2">
-						<div class="btn-group">
-							<button class="btn btn-default">Reset</button><button class="btn btn-primary">Compile</button>
-						</div>
+					<div class="col-md-6">
+						<select class="form-control" ng-model="compilerCtrl.template"
+							ng-change="compilerCtrl.loadTemplate()" ng-disabled="compilerCtrl.working">
+							<option value="c_basic.c">Basic C template</option>
+							<option value="c_parameters.c">Simple C template with parameters</option>
+						</select>
 					</div>
-					<div class="col-md-4">
-						<p>&nbsp;</p>
+					<div class="col-md-2">
+						<div class="btn-group form-group">
+							<button class="btn btn-default" ng-click="compilerCtrl.loadTemplate()">Reset</button>
+							<button class="btn btn-primary" ng-click="compilerCtrl.triggerWorkflow()">Execute</button>
+						</div>
 					</div>
 				</div>
 
+				<textarea class="form-control" name="sourcecode" placeholder="Type sourcecode here..." rows="20" ng-model="compilerCtrl.sourcecode" ng-disabled="compilerCtrl.working">
+				</textarea>
+
 			</form>
+
+			<div class="well" ng-show="compilerCtrl.compilationResult.length > 0 || compilerCtrl.executionResult.length > 0 || compilerCtrl.working">
+				<figure id="preloader" ng-show="compilerCtrl.working">
+					<img src="img/spinner.gif" alt="Working"/>
+					<figcaption ng-show="compilerCtrl.step == 'compile'">Compiling...</figcaption>
+					<figcaption ng-show="compilerCtrl.step == 'run'">Running...</figcaption>
+				</figure>
+
+				<div ng-show="compilerCtrl.compilationResult.length > 0">
+					<h4>Compilation result</h4>
+					<p>
+						{{compilerCtrl.compilationResult}}
+					</p>
+				</div>
+				<div ng-show="compilerCtrl.executionResult.length > 0">
+					<h4>Compilation result</h4>
+					<p>
+						{{compilerCtrl.executionResult}}
+					</p>
+				</div>
+
+			</div>
 		</div>
 
 
@@ -55,6 +94,9 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-	<script src="js/webcompiler.js"></script>
+	<script src="js/webcompiler.module.js"></script>
+	<script src="js/TemplateService.js"></script>
+	<script src="js/CompilationService.js"></script>
+	<script src="js/CompilerController.js"></script>
 </body>
 </html>

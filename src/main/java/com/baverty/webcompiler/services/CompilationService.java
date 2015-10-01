@@ -11,7 +11,7 @@ import com.baverty.webcompiler.repositories.ProgramsRepository;
 
 /**
  * Service used to compile programs.
- * 
+ *
  * @author baverty
  */
 @Service
@@ -25,7 +25,7 @@ public class CompilationService {
 
 	/**
 	 * Docker management service.
-	 * 
+	 *
 	 * Used to get interact with containers in which to compile programs
 	 */
 	@Inject
@@ -33,30 +33,32 @@ public class CompilationService {
 
 	/**
 	 * Compile the given program.
-	 * 
+	 *
 	 * <ol>
 	 * <li>Retrieve a suitable Docker container</li>
 	 * <li>Compile the source code in the container</li>
 	 * <li>Set the program status to COMPILED once finished (or COMPILE_ERROR if failure)</li>
 	 * </ol>
-	 * 
+	 *
 	 * This method is asynchronous. It starts the compilation and it's up to the
 	 * user of the service to check in the DB if the status changed to compile.
-	 * 
+	 *
 	 * @param p
 	 *            the program to compile
 	 */
 	@Async
 	public void compile(Program p) {
+		// TODO error management
+
 		// Get a container suitable for this program
 		String containerId = dockerManagementService.getContainer();
 		p.setContainerId(containerId);
-		
+
 		// Try to compile the program using this container.
 		dockerManagementService.transferSourceCode(p.getSourceCode(), containerId);
 		String compilationOutput = dockerManagementService.compile(p.getContainerId());
 		p.setCompilationOutput(compilationOutput);
-		
+
 		// Check that the compilation was successful
 		if(dockerManagementService.checkProgramOnContainer(containerId)) {
 			p.setStatus(ProgramStatus.COMPILED);
@@ -64,7 +66,7 @@ public class CompilationService {
 		else {
 			p.setStatus(ProgramStatus.COMPILE_ERROR);
 		}
-		
+
 		programRepository.save(p);
 	}
 
