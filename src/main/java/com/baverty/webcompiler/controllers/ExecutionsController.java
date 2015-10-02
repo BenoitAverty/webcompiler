@@ -36,7 +36,7 @@ public class ExecutionsController {
 		response.status = e.getStatus();
 		
 		if(response.status == ExecutionStatus.EXECUTED || response.status == ExecutionStatus.EXECUTION_ERROR) {
-			response.compilationOutput = e.getOutput();
+			response.executionOutput = e.getOutput();
 		}
 		
 		return response;

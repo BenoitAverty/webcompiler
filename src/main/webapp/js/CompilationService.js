@@ -71,7 +71,7 @@
             watcher = $interval(function() {
                 $http({
                     method: 'GET',
-                    url: '/executions/'+executionId,
+                    url: '/executions/'+executionId+'/status',
                 }).then(function(response) {
                     callback(response.data);
                 });

@@ -11,5 +11,5 @@ import com.baverty.webcompiler.domain.enumtypes.ExecutionStatus;
  */
 public class GetExecutionStatusResponse {
 	public ExecutionStatus status;
-	public String compilationOutput;
+	public String executionOutput;
 }
