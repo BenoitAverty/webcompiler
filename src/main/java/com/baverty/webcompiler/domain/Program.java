@@ -12,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.hibernate.validator.constraints.Length;
+
 import com.baverty.webcompiler.domain.enumtypes.ProgramStatus;
 import com.baverty.webcompiler.domain.enumtypes.ProgramStatusConverter;
 
@@ -56,18 +58,21 @@ public class Program implements Serializable {
 	 * Id of the container assigned to this program.
 	 */
 	@Column
+	@Length(max=64)
 	private String containerId;
 
 	/**
 	 * SourceCode of the program.
 	 */
 	@Column
+	@Length(max=10000)
 	private String sourceCode;
 
 	/**
 	 * Result of the compilation of the program.
 	 */
 	@Column
+	@Length(max=10000)
 	private String compilationOutput;
 	
 	/**

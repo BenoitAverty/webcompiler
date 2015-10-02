@@ -64,23 +64,23 @@
 
 			</form>
 
-			<div class="well" ng-show="compilerCtrl.compilationResult.length > 0 || compilerCtrl.executionResult.length > 0 || compilerCtrl.working">
+			<div class="well" ng-show="compilerCtrl.compilationOutput.length > 0 || compilerCtrl.executionOutput.length > 0 || compilerCtrl.working">
 				<figure id="preloader" ng-show="compilerCtrl.working">
 					<img src="img/spinner.gif" alt="Working"/>
 					<figcaption ng-show="compilerCtrl.step == 'compile'">Compiling...</figcaption>
 					<figcaption ng-show="compilerCtrl.step == 'run'">Running...</figcaption>
 				</figure>
 
-				<div ng-show="compilerCtrl.compilationResult.length > 0">
+				<div ng-show="compilerCtrl.compilationOutput.length > 0">
 					<h4>Compilation result</h4>
 					<p>
-						{{compilerCtrl.compilationResult}}
+						{{compilerCtrl.compilationOutput}}
 					</p>
 				</div>
-				<div ng-show="compilerCtrl.executionResult.length > 0">
+				<div ng-show="compilerCtrl.executionOutput.length > 0">
 					<h4>Compilation result</h4>
 					<p>
-						{{compilerCtrl.executionResult}}
+						{{compilerCtrl.executionOutput}}
 					</p>
 				</div>
 

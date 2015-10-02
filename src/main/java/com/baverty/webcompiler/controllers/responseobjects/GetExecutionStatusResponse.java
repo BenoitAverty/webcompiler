@@ -4,12 +4,12 @@ import com.baverty.webcompiler.controllers.ExecutionsController;
 import com.baverty.webcompiler.domain.enumtypes.ExecutionStatus;
 
 /**
- * Response object for GET /executions/(id) endpoint.
+ * Response object for GET /executions/(id)/status endpoint.
  * 
- * @see ExecutionsController#getExecution(long)
+ * @see ExecutionsController#getExecutionStatus(long)
  *
  */
-public class GetExecutionResponse {
+public class GetExecutionStatusResponse {
 	public ExecutionStatus status;
-	public String output;
+	public String compilationOutput;
 }

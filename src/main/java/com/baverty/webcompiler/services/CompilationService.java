@@ -48,26 +48,32 @@ public class CompilationService {
 	 */
 	@Async
 	public void compile(Program p) {
-		// TODO error management
 
-		// Get a container suitable for this program
-		String containerId = dockerManagementService.getContainer();
-		p.setContainerId(containerId);
-
-		// Try to compile the program using this container.
-		dockerManagementService.transferSourceCode(p.getSourceCode(), containerId);
-		String compilationOutput = dockerManagementService.compile(p.getContainerId());
-		p.setCompilationOutput(compilationOutput);
-
-		// Check that the compilation was successful
-		if(dockerManagementService.checkProgramOnContainer(containerId)) {
-			p.setStatus(ProgramStatus.COMPILED);
+		try {
+			// Get a container suitable for this program
+			String containerId = dockerManagementService.getContainer();
+			p.setContainerId(containerId);
+	
+			// Try to compile the program using this container.
+			dockerManagementService.transferSourceCode(p.getSourceCode(), containerId);
+			String compilationOutput = dockerManagementService.compile(p.getContainerId());
+			p.setCompilationOutput(compilationOutput);
+	
+			// Check that the compilation was successful
+			if(dockerManagementService.checkProgramOnContainer(containerId)) {
+				p.setStatus(ProgramStatus.COMPILED);
+			}
+			else {
+				p.setStatus(ProgramStatus.COMPILE_ERROR);
+			}
 		}
-		else {
+		catch(RuntimeException e) {
 			p.setStatus(ProgramStatus.COMPILE_ERROR);
+			throw e;
 		}
-
-		programRepository.save(p);
+		finally {
+			programRepository.save(p);
+		}
 	}
 
 }

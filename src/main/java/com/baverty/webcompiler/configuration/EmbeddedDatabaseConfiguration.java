@@ -20,6 +20,7 @@ public class EmbeddedDatabaseConfiguration implements ServletContextInitializer 
         ServletRegistration.Dynamic h2ConsoleServlet = ctx.addServlet("H2Console", new org.h2.server.web.WebServlet());
         h2ConsoleServlet.addMapping("/console/*");
         h2ConsoleServlet.setInitParameter("-properties", "src/main/resources");
+        h2ConsoleServlet.setInitParameter("-webAllowOthers", "true");
         h2ConsoleServlet.setLoadOnStartup(1);
 	}
 	

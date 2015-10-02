@@ -9,8 +9,8 @@
 		(function() {
 			vm.template = 'c_basic.c';
 			vm.working = false;
-			vm.compilationResult = "";
-			vm.executionResult = "";
+			vm.compilationOutput = "";
+			vm.executionOutput = "";
 			vm.step = "";
 			loadTemplate();
 		})();
@@ -41,15 +41,30 @@
 
 		function manageWorkflow(data) {
 			if (data.status == 'COMPILED') {
-				compilationService.stopWatchCompilation();
-				vm.step = 'run';
-				vm.compilationResult = data.compilationOutput;
+				compilationService.stopWatch();
+				vm.compilationOutput = data.compilationOutput;
+				compilationService.execute(
+					function() {
+						vm.step = 'run';
+						compilationService.watchExecution(manageWorkflow);
+					},
+					function() {
+						vm.step = '';
+						vm.working = false;
+					}
+				)
 			}
 			else if (data.status == 'COMPILE_ERROR') {
-				compilationService.stopWatchCompilation();
+				compilationService.stopWatch();
 				vm.step = '';
 				vm.working = false;
-				vm.compilationResult = data.compilationOutput;
+				vm.compilationOutput = data.compilationOutput;
+			}
+			else if (data.status == 'EXECUTED' || data.status == 'EXECUTION_ERROR') {
+				compilationService.stopWatch();
+				vm.step = '';
+				vm.working = false;
+				vm.executionOutput = data.executionOutput;
 			}
 		}
 	}
