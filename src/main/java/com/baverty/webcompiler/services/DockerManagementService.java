@@ -113,7 +113,7 @@ public class DockerManagementService {
 	 * 
 	 * @param containerId
 	 *            the ID of the container in which to compile the code.
-	 * @return TODO
+	 * @return the output of the compiler
 	 */
 	public String compile(String containerId) {
 

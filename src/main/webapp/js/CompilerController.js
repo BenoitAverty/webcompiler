@@ -28,6 +28,8 @@
 
 		function triggerWorkflow() {
 			vm.working = true;
+			vm.compilationOutput = '';
+			vm.executionOutput = '';
 			compilationService.compile(vm.sourcecode,
 				function() {
 					vm.step = 'compile';
