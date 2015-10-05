@@ -11,8 +11,6 @@ import com.baverty.webcompiler.repositories.ProgramsRepository;
 
 /**
  * Service used to compile programs.
- *
- * @author baverty
  */
 @Service
 public class CompilationService {
@@ -69,7 +67,7 @@ public class CompilationService {
 		}
 		catch(RuntimeException e) {
 			p.setStatus(ProgramStatus.COMPILE_ERROR);
-			throw e;
+			// TODO log something
 		}
 		finally {
 			programRepository.save(p);

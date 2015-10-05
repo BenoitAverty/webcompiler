@@ -8,8 +8,8 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
@@ -18,13 +18,10 @@ import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.core.DockerClientBuilder;
 
 /**
  * Service used for all the interactions of the application with docker
  * containers.
- * 
- * @author baverty
  */
 @Service
 public class DockerManagementService {
@@ -32,6 +29,7 @@ public class DockerManagementService {
 	/**
 	 * The docker client used to issue commands to the docker host.
 	 */
+	@Inject
 	private DockerClient docker;
 
 	/**
@@ -39,9 +37,8 @@ public class DockerManagementService {
 	 */
 	private Map<String, CreateContainerResponse> containers;
 
-	@PostConstruct
-	private void init() {
-		docker = DockerClientBuilder.getInstance("unix:///var/run/docker.sock").build();
+	
+	public DockerManagementService() {
 		containers = new HashMap<String, CreateContainerResponse>();
 	}
 
@@ -148,9 +145,9 @@ public class DockerManagementService {
 
 		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId).withCmd("ls", "/home/program.exe")
 				.withAttachStdout().exec();
-		
+
 		InputStream cmdStream = docker.execStartCmd(containerId).withExecId(cmd.getId()).exec();
-		
+
 		try {
 			return IOUtils.toString(cmdStream).trim().equals("/home/program.exe");
 		} catch (IOException e) {
@@ -158,27 +155,29 @@ public class DockerManagementService {
 		}
 
 	}
-	
 
 	/**
 	 * Execute a program on a container.
 	 * 
-	 * @param containerId the container where the program to run is located
+	 * @param containerId
+	 *            the container where the program to run is located
 	 * @return the output of the program
 	 */
 	public String execute(String containerId) {
 		startContainer(containerId);
-		
-		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId).withCmd("/bin/sh", "-c", "/home/program.exe 2>&1").withAttachStdout().exec();
-		
+
+		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId).withCmd("/bin/sh", "-c", "/home/program.exe 2>&1")
+				.withAttachStdout().exec();
 		InputStream cmdStream = docker.execStartCmd(containerId).withExecId(cmd.getId()).exec();
-		
+
 		try {
 			return IOUtils.toString(cmdStream);
 		} catch (IOException e) {
+			// Nothing can be done about an IOException at this point. Throw it
+			// back as a runtime exception.
 			throw new RuntimeException(e);
 		}
-		
+
 	}
 
 	/**

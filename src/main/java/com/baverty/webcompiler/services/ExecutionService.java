@@ -46,7 +46,7 @@ public class ExecutionService {
 		}
 		catch(Exception ex) {
 			e.setStatus(ExecutionStatus.EXECUTION_ERROR);
-			e.setOutput(ex.getMessage());
+			// TODO log something
 		}
 		
 		executionsRepository.save(e);

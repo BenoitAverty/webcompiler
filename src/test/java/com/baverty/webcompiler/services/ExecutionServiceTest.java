@@ -1,6 +1,7 @@
 package com.baverty.webcompiler.services;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,20 +53,44 @@ public class ExecutionServiceTest {
 	 * 
 	 */
 	@Test
-	public void executeNominalTest() {
+	public void testExecuteNominal() {
 
 		final String executionOutput = "Hello, world!";
 
 		when(dockerService.execute(anyString())).thenReturn(executionOutput);
 
-		Execution e = Mockito.mock(Execution.class);
+		Execution execution = Mockito.mock(Execution.class);
 		Program p = Mockito.mock(Program.class);
-		when(e.getProgram()).thenReturn(p);
+		when(execution.getProgram()).thenReturn(p);
 
-		executionService.execute(e);
+		executionService.execute(execution);
 
-		verify(e).setOutput(executionOutput);
-		verify(e).setStatus(ExecutionStatus.EXECUTED);
-		verify(executionsRepository).save(e);
+		verify(execution).setOutput(executionOutput);
+		verify(execution).setStatus(ExecutionStatus.EXECUTED);
+		verify(executionsRepository).save(execution);
 	}
+
+	/**
+	 * Test the execution of the {@link ExecutionService#execute(Execution)}
+	 * method when an exception occurs in the underlying docker service.
+	 * 
+	 * In case of exception, the {@link ExecutionService#execute(Execution)}
+	 * method should set the status of the execution to EXECUTION_ERROR and not
+	 * fill the output.
+	 * 
+	 */
+	@Test
+	public void testExecuteDockerException() {
+		
+		when(dockerService.execute(anyString())).thenThrow(new RuntimeException());
+
+		Execution execution = Mockito.mock(Execution.class);
+
+		executionService.execute(execution);
+
+		verify(execution, never()).setOutput(anyString());
+		verify(execution).setStatus(ExecutionStatus.EXECUTION_ERROR);
+		verify(executionsRepository).save(execution);
+	}
+
 }
