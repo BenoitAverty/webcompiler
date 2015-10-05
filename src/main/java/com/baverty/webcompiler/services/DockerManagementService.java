@@ -2,9 +2,6 @@ package com.baverty.webcompiler.services;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +28,12 @@ public class DockerManagementService {
 	 */
 	@Inject
 	private DockerClient docker;
+	
+	/**
+	 * The tcp service used to send data to containers.
+	 */
+	@Inject
+	private TcpService tcpService;
 
 	/**
 	 * The set of containers created by the service.
@@ -86,20 +89,7 @@ public class DockerManagementService {
 				.get(new ExposedPort(8080))[0].getHostPort();
 
 		// Connect to the port and send source code
-		try {
-			Socket s = new Socket("localhost", hostPort);
-			OutputStreamWriter os = new OutputStreamWriter(s.getOutputStream());
-			os.write(sourceCode);
-			os.flush();
-			s.close();
-
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		tcpService.sendData("localhost", hostPort, sourceCode);
 	}
 
 	/**

@@ -1,32 +1,26 @@
 package com.baverty.webcompiler.services;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.never;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
-
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.internal.stubbing.defaultanswers.ReturnsDeepStubs;
 
-import com.baverty.webcompiler.domain.Execution;
-import com.baverty.webcompiler.domain.Program;
-import com.baverty.webcompiler.domain.enumtypes.ExecutionStatus;
-import com.baverty.webcompiler.repositories.ExecutionsRepository;
 import com.baverty.webcompiler.test.utils.SelfReturningAnswer;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.command.ExecCreateCmd;
+import com.github.dockerjava.api.command.ExecStartCmd;
+import com.github.dockerjava.api.command.InspectContainerCmd;
 import com.github.dockerjava.api.model.ExposedPort;
 
 public class DockerManagementServiceTest {
@@ -42,6 +36,12 @@ public class DockerManagementServiceTest {
 	 */
 	@Mock
 	private DockerClient docker;
+
+	/**
+	 * Mock of the tcp service.
+	 */
+	@Mock
+	private TcpService tcpService;
 
 	/**
 	 * Setup instance of service to test and inject mocks into it.
@@ -66,10 +66,10 @@ public class DockerManagementServiceTest {
 	public void testGetContainerNominal() {
 
 		final String containerId = "mockContainerId";
-		
+
 		CreateContainerResponse resp = mock(CreateContainerResponse.class);
 		when(resp.getId()).thenReturn(containerId);
-		
+
 		// Use self returning answer to mock the chaining used by the API
 		CreateContainerCmd cmd = mock(CreateContainerCmd.class, new SelfReturningAnswer());
 		when(cmd.exec()).thenReturn(resp);
@@ -78,6 +78,41 @@ public class DockerManagementServiceTest {
 		String ret = dockerManagementService.getContainer();
 
 		assertThat(ret).isEqualTo(containerId);
+	}
+
+	/**
+	 * Test the nominal execution of the
+	 * {@link DockerManagementService#transferSourceCode(String, String)}
+	 * method.
+	 * 
+	 * In the nominal case, the method should open a port on the destination
+	 * machine and use the tcpservice to send data through this port.
+	 * 
+	 */
+	@Test
+	public void testTransferSourceCodeNominal() {
+
+		final String containerId = "mockContainerId";
+		final String sourceCode = "mockSourceCode";
+		final Integer mockPort = 1;
+
+		// Use self returning answer to mock the chaining used by the API
+		ExecCreateCmd createCmd = mock(ExecCreateCmd.class, new SelfReturningAnswer());
+		ExecStartCmd startCmd = mock(ExecStartCmd.class, new SelfReturningAnswer());
+		when(docker.execCreateCmd(anyString())).thenReturn(createCmd);
+		when(docker.execStartCmd(anyString())).thenReturn(startCmd);
+
+		// mock the very tedious call used to retrieve port in the container
+		InspectContainerCmd inspectCmd = mock(InspectContainerCmd.class, new ReturnsDeepStubs());
+		when(docker.inspectContainerCmd(anyString())).thenReturn(inspectCmd);
+		when(inspectCmd.exec().getNetworkSettings().getPorts().getBindings().get(any(ExposedPort.class))[0]
+				.getHostPort()).thenReturn(mockPort);
+		
+		// Call method to test
+		dockerManagementService.transferSourceCode(sourceCode, containerId);
+
+		// Verify that we connected to the right port and sent the right data
+		verify(tcpService).sendData("localhost", mockPort, sourceCode);
 	}
 
 }
