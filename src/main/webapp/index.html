@@ -11,7 +11,7 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 
 </head>
-<body ng-app="webcompiler">
+<body data-ng-app="webcompiler">
 	<nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -36,48 +36,48 @@
 	<div class="container" role="main">
 		<div class="page-header"><h1>Compile C online</h1></div>
 
-		<div id="compiler" ng-controller="CompilerController as compilerCtrl">
+		<div id="compiler" data-ng-controller="CompilerController as compilerCtrl">
 			<form>
 				<div class="row">
 					<div class="col-md-4">
-						<select class="form-control" ng-disabled="compilerCtrl.working">
+						<select class="form-control" data-ng-disabled="compilerCtrl.working">
 							<option>C &mdash; gcc4.9.2</option>
 						</select>
 					</div>
 					<div class="col-md-6">
-						<select class="form-control" ng-model="compilerCtrl.template"
-							ng-change="compilerCtrl.loadTemplate()" ng-disabled="compilerCtrl.working">
+						<select class="form-control" data-ng-model="compilerCtrl.template"
+							data-ng-change="compilerCtrl.loadTemplate()" data-ng-disabled="compilerCtrl.working">
 							<option value="c_basic.c">Basic C template</option>
 							<option value="c_parameters.c">Simple C template with parameters</option>
 						</select>
 					</div>
 					<div class="col-md-2">
 						<div class="btn-group form-group">
-							<button class="btn btn-default" ng-click="compilerCtrl.loadTemplate()">Reset</button>
-							<button class="btn btn-primary" ng-click="compilerCtrl.triggerWorkflow()">Execute</button>
+							<button class="btn btn-default" data-ng-click="compilerCtrl.loadTemplate()">Reset</button>
+							<button class="btn btn-primary" data-ng-click="compilerCtrl.triggerWorkflow()">Execute</button>
 						</div>
 					</div>
 				</div>
 
-				<textarea class="form-control" name="sourcecode" placeholder="Type sourcecode here..." rows="20" ng-model="compilerCtrl.sourcecode" ng-disabled="compilerCtrl.working">
+				<textarea class="form-control" name="sourcecode" placeholder="Type sourcecode here..." rows="20" data-ng-model="compilerCtrl.sourcecode" data-ng-disabled="compilerCtrl.working">
 				</textarea>
 
 			</form>
 
-			<div class="well" ng-show="compilerCtrl.compilationOutput.length > 0 || compilerCtrl.executionOutput.length > 0 || compilerCtrl.working">
-				<figure id="preloader" ng-show="compilerCtrl.working">
+			<div class="well" data-ng-show="compilerCtrl.compilationOutput.length > 0 || compilerCtrl.executionOutput.length > 0 || compilerCtrl.working">
+				<figure id="preloader" data-ng-show="compilerCtrl.working">
 					<img src="img/spinner.gif" alt="Working"/>
-					<figcaption ng-show="compilerCtrl.step == 'compile'">Compiling...</figcaption>
-					<figcaption ng-show="compilerCtrl.step == 'run'">Running...</figcaption>
+					<figcaption data-ng-show="compilerCtrl.step == 'compile'">Compiling...</figcaption>
+					<figcaption data-ng-show="compilerCtrl.step == 'run'">Running...</figcaption>
 				</figure>
 
-				<div ng-show="compilerCtrl.compilationOutput.length > 0">
+				<div data-ng-show="compilerCtrl.compilationOutput.length > 0">
 					<h4>Compilation result</h4>
 					<p>
 						{{compilerCtrl.compilationOutput}}
 					</p>
 				</div>
-				<div ng-show="compilerCtrl.executionOutput.length > 0">
+				<div data-ng-show="compilerCtrl.executionOutput.length > 0">
 					<h4>Program output</h4>
 					<p>
 						{{compilerCtrl.executionOutput}}
