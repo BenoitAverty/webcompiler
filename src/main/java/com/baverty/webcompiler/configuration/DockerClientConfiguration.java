@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Configuration
-@ConfigurationProperties(prefix="docker.client")
+@ConfigurationProperties(prefix="docker.client", ignoreUnknownFields=false)
 public class DockerClientConfiguration {
 
 	@Getter
@@ -20,6 +20,9 @@ public class DockerClientConfiguration {
 	
 	@Bean
 	public DockerClient dockerClient() {
-		return DockerClientBuilder.getInstance(socket).build();
+		
+		DockerClientBuilder builder = DockerClientBuilder.getInstance(socket);
+		
+		return builder.build();
 	}
 }

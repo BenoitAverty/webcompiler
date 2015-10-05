@@ -1,2 +1,4 @@
 # Docker options
-docker.client.socket=unix:///var/run/docker.sock
+docker:
+  client:
+    socket: unix:///var/run/docker.sock
