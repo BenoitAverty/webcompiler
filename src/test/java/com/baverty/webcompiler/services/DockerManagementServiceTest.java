@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -52,6 +54,18 @@ public class DockerManagementServiceTest {
 
 		MockitoAnnotations.initMocks(this);
 	}
+	
+	/**
+	 * Set up the docker client mock to answer "true" when asking if a container is running.
+	 * Used to test methods that check if the container is running before doing their job. 
+	 */
+	private void mockContainerIsStarted() {
+		
+		InspectContainerCmd cmd = mock(InspectContainerCmd.class, new ReturnsDeepStubs());
+		when(cmd.exec().getState().isRunning()).thenReturn(true);
+		
+		when(docker.inspectContainerCmd(anyString())).thenReturn(cmd);
+	}
 
 	/**
 	 * Test the nominal execution of the
@@ -96,6 +110,8 @@ public class DockerManagementServiceTest {
 		final String sourceCode = "mockSourceCode";
 		final Integer mockPort = 1;
 
+		mockContainerIsStarted();
+		
 		// Use self returning answer to mock the chaining used by the API
 		ExecCreateCmd createCmd = mock(ExecCreateCmd.class, new SelfReturningAnswer());
 		ExecStartCmd startCmd = mock(ExecStartCmd.class, new SelfReturningAnswer());
@@ -105,14 +121,47 @@ public class DockerManagementServiceTest {
 		// mock the very tedious call used to retrieve port in the container
 		InspectContainerCmd inspectCmd = mock(InspectContainerCmd.class, new ReturnsDeepStubs());
 		when(docker.inspectContainerCmd(anyString())).thenReturn(inspectCmd);
-		when(inspectCmd.exec().getNetworkSettings().getPorts().getBindings().get(any(ExposedPort.class))[0]
-				.getHostPort()).thenReturn(mockPort);
+		//when(inspectCmd.exec().getNetworkSettings().getPorts().getBindings().get(any(ExposedPort.class))[0]
+				//.getHostPort()).thenReturn(mockPort);
 		
 		// Call method to test
 		dockerManagementService.transferSourceCode(sourceCode, containerId);
 
 		// Verify that we connected to the right port and sent the right data
 		verify(tcpService).sendData("localhost", mockPort, sourceCode);
+	}
+	
+	/**
+	 * Test the nominal execution of the
+	 * {@link DockerManagementService#compile(String)}
+	 * method.
+	 * 
+	 * In the nominal case, the method should start the compilation cmd on 
+	 * the container and return a compilation output.
+	 * 
+	 */
+	@Test
+	public void testCompileNominal() {
+
+		final String containerId = "mockContainerId";
+		final String compilationOutput = "mock\nCompilationOutput";
+		
+		mockContainerIsStarted();
+
+		// Use self returning answer to mock the chaining used by the API
+		ExecCreateCmd createCmd = mock(ExecCreateCmd.class, new SelfReturningAnswer());
+		ExecStartCmd startCmd = mock(ExecStartCmd.class, new SelfReturningAnswer());
+		when(docker.execCreateCmd(anyString())).thenReturn(createCmd);
+		when(docker.execStartCmd(anyString())).thenReturn(startCmd);
+		when(startCmd.exec()).thenReturn(IOUtils.toInputStream(compilationOutput));
+
+		// Call method to test
+		String result = dockerManagementService.compile(containerId);
+
+		// Verify that we connected to the right port and sent the right data
+		verify(docker, times(1)).execCreateCmd(containerId);
+		verify(docker, times(1)).execStartCmd(containerId);
+		assertThat(result).isEqualTo(compilationOutput);
 	}
 
 }
