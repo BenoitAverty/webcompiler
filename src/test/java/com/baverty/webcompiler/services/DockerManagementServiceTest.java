@@ -181,5 +181,70 @@ public class DockerManagementServiceTest {
 		verify(docker, times(1)).execStartCmd(containerId);
 		assertThat(result).isEqualTo(compilationOutput);
 	}
+	
+	/**
+	 * Test the nominal execution of the
+	 * {@link DockerManagementService#checkProgramOnContainer(String)} method.
+	 * 
+	 * In the nominal case, the method should start the compilation cmd on the
+	 * container and return a compilation output.
+	 * 
+	 */
+	@Test
+	public void testCheckProgramOnContainerNominal() {
+
+		final String containerId = "mockContainerId";
+
+		mockContainerIsStarted();
+
+		// Use self returning answer to mock the chaining used by the API
+		ExecCreateCmd createCmd = mock(ExecCreateCmd.class, new AnswerWithSelf(ExecCreateCmd.class));
+		when(createCmd.exec()).thenReturn(mock(ExecCreateCmdResponse.class));
+		ExecStartCmd startCmd = mock(ExecStartCmd.class, new AnswerWithSelf(ExecStartCmd.class));
+		when(docker.execCreateCmd(anyString())).thenReturn(createCmd);
+		when(docker.execStartCmd(anyString())).thenReturn(startCmd);
+		when(startCmd.exec()).thenReturn(IOUtils.toInputStream("/home/program.exe")).thenReturn(IOUtils.toInputStream(""));
+
+		// Call method to test
+		boolean result1 = dockerManagementService.checkProgramOnContainer(containerId);
+		boolean result2 = dockerManagementService.checkProgramOnContainer(containerId);
+
+		// Verify that each result is OK
+		assertThat(result1).isTrue();
+		assertThat(result2).isFalse();
+	}
+	
+	/**
+	 * Test the nominal execution of the
+	 * {@link DockerManagementService#execute(String)} method.
+	 * 
+	 * In the nominal case, the method should start the execution cmd on the
+	 * container and return an execution output.
+	 * 
+	 */
+	@Test
+	public void testExecuteNominal() {
+
+		final String containerId = "mockContainerId";
+		final String execOutput = "mock\nExecutionOutput";
+
+		mockContainerIsStarted();
+
+		// Use self returning answer to mock the chaining used by the API
+		ExecCreateCmd createCmd = mock(ExecCreateCmd.class, new AnswerWithSelf(ExecCreateCmd.class));
+		when(createCmd.exec()).thenReturn(mock(ExecCreateCmdResponse.class));
+		ExecStartCmd startCmd = mock(ExecStartCmd.class, new AnswerWithSelf(ExecStartCmd.class));
+		when(docker.execCreateCmd(anyString())).thenReturn(createCmd);
+		when(docker.execStartCmd(anyString())).thenReturn(startCmd);
+		when(startCmd.exec()).thenReturn(IOUtils.toInputStream(execOutput));
+
+		// Call method to test
+		String result = dockerManagementService.execute(containerId);
+
+		// Verify that we connected to the right port and sent the right data
+		verify(docker, times(1)).execCreateCmd(containerId);
+		verify(docker, times(1)).execStartCmd(containerId);
+		assertThat(result).isEqualTo(execOutput);
+	}
 
 }

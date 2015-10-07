@@ -118,9 +118,9 @@ public class DockerManagementService {
 			cmdStream.close();
 			return result;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "failure";
+			// Nothing can be done about an IOException at this point. Throw it
+			// back as a runtime exception.
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -141,6 +141,8 @@ public class DockerManagementService {
 		try {
 			return IOUtils.toString(cmdStream).trim().equals("/home/program.exe");
 		} catch (IOException e) {
+			// Nothing can be done about an IOException at this point. Throw it
+			// back as a runtime exception.
 			throw new RuntimeException(e);
 		}
 
