@@ -7,9 +7,13 @@
 log/
 target/
 
+#node
+node_modules/
+
 # h2
 src/main/resources/.h2.server.properties
 
 #other
 /.apt_generated/
 .factorypath
+.springBeans
