@@ -3,12 +3,11 @@
 <head>
 	<title>ab0's Webcompiler</title>
 
-	<!-- app -->
-	<link rel="stylesheet" href="css/main.css">
+  <!-- bower:css -->
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+  <!-- endbower -->
 
-	<!-- Bootstrap -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="css/main.css" />
 
 </head>
 <body data-ng-app="webcompiler">
@@ -86,17 +85,19 @@
 
 			</div>
 		</div>
-
-
-
 	</div>
 
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <!-- bower:js -->
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-cache-buster/angular-cache-buster.js"></script>
+  <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+  <!-- endbower -->
+
 	<script src="js/webcompiler.module.js"></script>
 	<script src="js/TemplateService.js"></script>
 	<script src="js/CompilationService.js"></script>
 	<script src="js/CompilerController.js"></script>
+
 </body>
 </html>
