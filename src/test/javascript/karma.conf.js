@@ -5,10 +5,8 @@ module.exports = function (config) {
     config.set({
         // base path, that will be used to resolve files and exclude
         basePath: '../../',
-
         // testing framework to use (jasmine/mocha/qunit/...)
         frameworks: ['jasmine'],
-
         // list of files / patterns to load in the browser
         files: [
             // bower:js
@@ -21,10 +19,22 @@ module.exports = function (config) {
             // endbower
             'main/webapp/js/webcompiler.module.js',
             'main/webapp/js/**/*.js',
-            'test/javascript/**/!(karma.conf).js'
+            'test/javascript/**/*.coffee'
         ],
-
-
-        browsers: ['PhantomJS']
+        // Browser on which to test
+        browsers: ['PhantomJS'],
+        // Compile coffeescript specs
+        preprocessors: {
+          'test/javascript/**/*.coffee': ['coffee']
+        },
+        coffeePreprocessor: {
+          options: {
+            bare: true,
+            sourceMap: false
+          },
+          transformPath: function(path) {
+            return path.replace(/\.coffee/, '.js')
+          }
+        }
     });
 };
