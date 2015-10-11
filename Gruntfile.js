@@ -9,7 +9,19 @@ module.exports = function(grunt) {
       },
       test: {
         src: ['src/test/javascript/karma.conf.js'],
-        devDependencies: true
+        devDependencies: true,
+        ignorePath: /\.\.\/\.\.\//, // remove ../../ from paths of injected javascripts
+        fileTypes: {
+          js: {
+            block: /(([\s\t]*)\/\/\s*bower:*(\S*))(\n|\r|.)*?(\/\/\s*endbower)/gi,
+              detect: {
+                js: /'(.*\.js)'/gi
+              },
+              replace: {
+                js: '\'{{filePath}}\','
+              }
+          }
+        }
       }
     },
     karma: {
@@ -20,9 +32,8 @@ module.exports = function(grunt) {
     }
   });
 
-  // Load the plugin that provides the "wiredep" task.
   grunt.loadNpmTasks('grunt-wiredep');
-  grunt.loadNpmTasks('karma');
+  grunt.loadNpmTasks('grunt-karma');
 
   // Default task(s).
   grunt.registerTask('build', ['wiredep:app']);
