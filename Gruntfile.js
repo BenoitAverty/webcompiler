@@ -38,6 +38,7 @@ module.exports = function(grunt) {
   // Default task(s).
   grunt.registerTask('build', ['wiredep:app']);
 
+  // Test with karma
   grunt.registerTask('test', ['wiredep:test','karma']);
 
 };

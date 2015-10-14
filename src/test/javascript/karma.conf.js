@@ -15,7 +15,6 @@ module.exports = function (config) {
             'main/webapp/bower_components/angular-cache-buster/angular-cache-buster.js',
             'main/webapp/bower_components/bootstrap/dist/js/bootstrap.js',
             'main/webapp/bower_components/angular-mocks/angular-mocks.js',
-            'main/webapp/bower_components/angular-scenario/angular-scenario.js',
             // endbower
             'main/webapp/js/webcompiler.module.js',
             'main/webapp/js/**/*.js',
