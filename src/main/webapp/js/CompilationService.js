@@ -1,6 +1,6 @@
 (function() {
     angular.module('webcompiler')
-        .factory('compilationService', ['$http', '$interval', CompilationService]);
+        .factory('CompilationService', ['$http', '$interval', CompilationService]);
 
     function CompilationService($http, $interval) {
         var serviceInstance = {

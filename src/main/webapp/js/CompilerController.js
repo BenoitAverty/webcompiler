@@ -1,6 +1,6 @@
 (function() {
 	angular.module('webcompiler')
-		.controller('CompilerController', ['templateService', 'compilationService', CompilerController] );
+		.controller('CompilerController', ['TemplateService', 'CompilationService', CompilerController] );
 
 	function CompilerController(templateService, compilationService) {
 		var vm = this;

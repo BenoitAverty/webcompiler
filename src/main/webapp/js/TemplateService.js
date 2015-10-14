@@ -1,6 +1,6 @@
 (function() {
     angular.module('webcompiler')
-        .factory('templateService', ['$http', TemplateService]);
+        .factory('TemplateService', ['$http', TemplateService]);
 
     function TemplateService($http) {
         var serviceInstance = {

@@ -34,6 +34,10 @@ describe 'CompilerController', ->
 
     describe 'loadTemplate function', ->
         it 'changes the content of the source area when called', ->
+            TemplateService.get.and.callFake (code, callback) ->
+                if code=='c_parameters.c' then callback 'c_parameters_content'
+                else callback 'c_basic_content'
+
             controller.template = 'c_parameters.c'
             controller.loadTemplate()
             expect(controller.sourcecode).toBe 'c_parameters_content'
@@ -61,8 +65,9 @@ describe 'CompilerController', ->
                 expect(controller.step).toBe 'compile'
 
             it 'starts to watch the compilation status', ->
+                spyOn CompilationService, 'watchCompilation'
                 controller.triggerWorkflow()
-                expect(mockCompilationService.watchCompilation).toHaveBeenCalled()
+                expect(CompilationService.watchCompilation).toHaveBeenCalled()
 
 
         describe 'when the api returns an error', ->
