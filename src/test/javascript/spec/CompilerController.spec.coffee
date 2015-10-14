@@ -1,22 +1,25 @@
 describe 'CompilerController', ->
 
-    beforeEach module 'webcompiler'
-
+    # controller under test
     controller = null
-    mockCompilationService = jasmine.createSpyObj 'mockCompilationService',
-        ['compile', 'execute', 'watchCompilation', 'watchExecution', 'stopWatch']
-    mockTemplateService = jasmine.createSpyObj 'mockTemplateService', ['get']
 
-    beforeEach inject (_$controller_) ->
-        mockTemplateService.get.and.callFake (code, callback) ->
-            switch code
-                when 'c_basic.c' then callback 'c_basic_content'
-                when 'c_parameters.c' then callback 'c_parameters_content'
-                else callback 'default_mock_content'
+    # services used by the controller (can be spied on)
+    CompilationService = null;
+    TemplateService = null;
 
-        controller = _$controller_ 'CompilerController',
-            CompilationService: mockCompilationService
-            templateService: mockTemplateService
+    beforeEach ->
+        module 'webcompiler'
+
+    # Retrieve the services to be able to spy on them.
+    beforeEach ->
+        inject (_$controller_, _TemplateService_, _CompilationService_) ->
+            CompilationService = _CompilationService_
+            TemplateService = _TemplateService_
+
+            spyOn(TemplateService, 'get').and.callFake (code, callback) ->
+                callback 'c_basic_content'
+
+            controller = _$controller_ 'CompilerController'
 
     it 'is not working at the beginning', ->
         expect(controller.working).toBe false
@@ -37,14 +40,6 @@ describe 'CompilerController', ->
 
     describe 'triggerWorkflow function', ->
 
-        beforeEach inject (_$controller_) ->
-            mockCompilationService.compile.and.callFake (source, callback, error) ->
-                callback()
-
-            controller = _$controller_ 'CompilerController',
-                CompilationService: mockCompilationService
-                templateService: mockTemplateService
-
         it 'sets the compiler to working state', ->
             controller.triggerWorkflow()
             expect(controller.working).toBe true
@@ -56,14 +51,26 @@ describe 'CompilerController', ->
             expect(controller.executionOutput).toBe ''
             expect(controller.compilationOutput).toBe ''
 
-        it 'sets the state to "compile" after the compilation service is called', ->
-            controller.triggerWorkflow()
-            expect(controller.step).toBe 'compile'
+        describe 'when the api accepts the program', ->
+            beforeEach ->
+                spyOn(CompilationService, 'compile').and.callFake (source, callback, error) ->
+                    callback()
 
-        it 'starts to watch the compilation status after the compilation service is called', ->
-            controller.triggerWorkflow()
-            expect(mockCompilationService.watchCompilation).toHaveBeenCalled()
+            it 'sets the state to "compile"', ->
+                controller.triggerWorkflow()
+                expect(controller.step).toBe 'compile'
 
-        it 'Sets the compiler to not working state if an error occurs', ->
-            controller.triggerWorkflow()
-            expect(controller.working).toBe false
+            it 'starts to watch the compilation status', ->
+                controller.triggerWorkflow()
+                expect(mockCompilationService.watchCompilation).toHaveBeenCalled()
+
+
+        describe 'when the api returns an error', ->
+
+            beforeEach ->
+                spyOn(CompilationService, 'compile').and.callFake (source, callback, error) ->
+                    error()
+
+            it 'Sets the compiler to not working state if an error occurs', ->
+                controller.triggerWorkflow()
+                expect(controller.working).toBe false

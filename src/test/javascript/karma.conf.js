@@ -17,7 +17,9 @@ module.exports = function (config) {
             'main/webapp/bower_components/angular-mocks/angular-mocks.js',
             // endbower
             'main/webapp/js/webcompiler.module.js',
-            'main/webapp/js/**/*.js',
+            'main/webapp/js/TemplateService.js',
+            'main/webapp/js/CompilationService.js',
+            'main/webapp/js/CompilerController.js',
             'test/javascript/**/*.coffee'
         ],
         // Browser on which to test
