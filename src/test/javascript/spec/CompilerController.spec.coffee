@@ -16,21 +16,24 @@ describe 'CompilerController', ->
             CompilationService = _CompilationService_
             TemplateService = _TemplateService_
 
+            # Spy on the Template Service because it is used at the
+            # construction of the controller
             spyOn(TemplateService, 'get').and.callFake (code, callback) ->
                 callback 'c_basic_content'
 
             controller = _$controller_ 'CompilerController'
 
-    it 'is not working at the beginning', ->
-        expect(controller.working).toBe false
+    describe 'after construction', ->
+        it 'is not working', ->
+            expect(controller.working).toBe false
 
-    it 'doesn\'t show any output at the beginning', ->
-        expect(controller.compilationOutput).toBe ''
-        expect(controller.executionOutput).toBe ''
+        it 'doesn\'t show any output', ->
+            expect(controller.compilationOutput).toBe ''
+            expect(controller.executionOutput).toBe ''
 
-    it 'starts with default template as source', ->
-        expect(controller.template).toBe 'c_basic.c'
-        expect(controller.sourcecode).toBe 'c_basic_content'
+        it 'starts with default template as source', ->
+            expect(controller.template).toBe 'c_basic.c'
+            expect(controller.sourcecode).toBe 'c_basic_content'
 
     describe 'loadTemplate function', ->
         it 'changes the content of the source area when called', ->
@@ -78,4 +81,75 @@ describe 'CompilerController', ->
 
             it 'Sets the compiler to not working state if an error occurs', ->
                 controller.triggerWorkflow()
+                expect(controller.working).toBe false
+
+    describe 'manageWorkflow function', ->
+
+        # manageWorkflow is private. We call it as a callback through the "triggerWorkflow" function
+        beforeEach ->
+            spyOn(CompilationService, 'compile').and.callFake (s, callback, e) ->
+                callback()
+
+            spyOn(CompilationService, 'stopWatch')
+
+        afterEach ->
+            expect(CompilationService.stopWatch).toHaveBeenCalled()
+
+        describe 'when the status becomes "COMPILED"', ->
+
+            beforeEach ->
+                # mock the callback from "watchCompilation"
+                spyOn(CompilationService, 'watchCompilation').and.callFake (callback) ->
+                    callback
+                        status: 'COMPILED'
+                        compilationOutput: 'compilation_output'
+
+                spyOn(CompilationService, 'execute')
+
+            it 'displays the compilation output', ->
+                controller.triggerWorkflow()
+                expect(controller.compilationOutput).toBe 'compilation_output'
+
+            it 'calls the execution method', ->
+                controller.triggerWorkflow()
+                expect(CompilationService.execute).toHaveBeenCalled()
+
+        describe 'when the status becomes "COMPILATION_ERROR"', ->
+            beforeEach ->
+                # mock the callback from "watchCompilation"
+                spyOn(CompilationService, 'watchCompilation').and.callFake (callback) ->
+                    callback
+                        status: 'COMPILE_ERROR'
+                        compilationOutput: 'compilation_output'
+
+                spyOn(CompilationService, 'execute')
+
+            it 'displays the compilation output', ->
+                controller.triggerWorkflow()
+                expect(controller.compilationOutput).toBe 'compilation_output'
+
+            it 'doesn\'t call the execution method', ->
+                controller.triggerWorkflow()
+                expect(CompilationService.execute).not.toHaveBeenCalled()
+
+            it 'clears the working state', ->
+                controller.triggerWorkflow()
+                expect(controller.step).toBe ''
+                expect(controller.working).toBe false
+
+        describe 'when the status indicates the end of the execution', ->
+            beforeEach ->
+                # mock the callback from "watchCompilation"
+                spyOn(CompilationService, 'watchCompilation').and.callFake (callback) ->
+                    callback
+                        status: 'EXECUTED'
+                        executionOutput: 'execution_output'
+
+            it 'diplays the output of the execution', ->
+                controller.triggerWorkflow()
+                expect(controller.executionOutput).toBe 'execution_output'
+
+            it 'clears the working state', ->
+                controller.triggerWorkflow()
+                expect(controller.step).toBe ''
                 expect(controller.working).toBe false
