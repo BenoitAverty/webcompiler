@@ -13,5 +13,5 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_EMPTY)
 public class PostProgramResponse {
 	public RequestStatus status;
-	public long programId;
+	public Long programId;
 }

@@ -2,6 +2,7 @@ package com.baverty.webcompiler.controllers;
 
 import javax.inject.Inject;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,14 +65,21 @@ public class ProgramsController {
 	public PostProgramResponse postProgram(@RequestBody String body) {
 
 		Program p = new Program();
-
-		p.setStatus(ProgramStatus.NEW);
-		p.setSourceCode(body);
-		programsRepository.save(p);
+		PostProgramResponse response = new PostProgramResponse();
+		
+		try {
+			p.setStatus(ProgramStatus.NEW);
+			p.setSourceCode(body);
+			programsRepository.save(p);
+		}
+		catch(DataAccessException e) {
+			response.status = RequestStatus.KO;
+			response.programId = null;
+			return response;
+		}
 
 		compilationService.compile(p);
 
-		PostProgramResponse response = new PostProgramResponse();
 		response.status = RequestStatus.OK;
 		response.programId = p.getTid();
 		
