@@ -1,0 +1,5 @@
+spring:
+  jpa:
+    show-sql: true
+  profiles:
+    active: dev  

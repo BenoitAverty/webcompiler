@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Type;
+
 import com.baverty.webcompiler.domain.enumtypes.ExecutionStatus;
 import com.baverty.webcompiler.domain.enumtypes.ExecutionStatusConverter;
 
@@ -47,5 +49,6 @@ public class Execution {
 	 * The output of the execution.
 	 */
 	@Column
+	@Type(type="text")
 	private String output;
 }
