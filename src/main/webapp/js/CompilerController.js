@@ -66,7 +66,7 @@
 				compilationService.stopWatch();
 				vm.step = '';
 				vm.working = false;
-				vm.executionOutput = data.executionOutput;
+				vm.executionOutput = data.executionOutput.trim().replace(/\r\n|\r|\n/gm, '<br />');
 			}
 		}
 	}
