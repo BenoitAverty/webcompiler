@@ -79,7 +79,9 @@
 				<div data-ng-show="compilerCtrl.executionOutput.length > 0">
 					<h4>Program output</h4>
 					<p>
-						{{compilerCtrl.executionOutput}}
+						<pre>
+							{{compilerCtrl.executionOutput}}
+						</pre>
 					</p>
 				</div>
 
@@ -92,6 +94,7 @@
   <script src="bower_components/angular/angular.js"></script>
   <script src="bower_components/angular-cache-buster/angular-cache-buster.js"></script>
   <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
   <!-- endbower -->
 
 	<script src="js/webcompiler.module.js"></script>

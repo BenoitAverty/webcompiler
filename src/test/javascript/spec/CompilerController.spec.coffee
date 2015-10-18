@@ -150,16 +150,19 @@ describe 'CompilerController', ->
                 expect(controller.executionOutput).toBe 'execution_output'
 
             it 'removes blanks and transform carriage returns', ->
+
+                executionOutput="""
+                Hello,
+world!
+
+            """
                 CompilationService.watchCompilation.and.callFake (callback) ->
                     callback
                         status: 'EXECUTED'
-                        executionOutput:"""
-						Hello,
-world!
+                        executionOutput:executionOutput
 
-					"""
                 controller.triggerWorkflow()
-                expect(controller.executionOutput).toBe 'Hello,<br />world!'
+                expect(controller.executionOutput).toBe executionOutput
 
             it 'clears the working state', ->
                 controller.triggerWorkflow()
