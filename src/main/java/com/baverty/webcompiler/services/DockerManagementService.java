@@ -2,6 +2,7 @@ package com.baverty.webcompiler.services;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
+import com.baverty.webcompiler.services.dto.ProgramOutput;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
@@ -155,13 +157,14 @@ public class DockerManagementService {
 	 *            the container where the program to run is located
 	 * @return the output of the program
 	 */
-	public String execute(String containerId) {
+	public ProgramOutput execute(String containerId) {
 		startContainer(containerId);
 
 		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId).withCmd("/bin/sh", "-c", "/home/program.exe 2>&1")
 				.withAttachStdout().exec();
 		InputStream cmdStream = docker.execStartCmd(containerId).withExecId(cmd.getId()).exec();
-
+		
+		while(cmdStream.read)
 		try {
 			return IOUtils.toString(cmdStream);
 		} catch (IOException e) {

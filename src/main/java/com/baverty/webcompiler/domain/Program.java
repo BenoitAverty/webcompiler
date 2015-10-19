@@ -73,13 +73,12 @@ public class Program implements Serializable {
 	 * Result of the compilation of the program.
 	 */
 	@Column
-	@Type(type="text")
-	private String compilationOutput;
+	@OneToMany(fetch=FetchType.LAZY, mappedBy="program")
+	private Set<OutputChunk> compilationOutput;
 	
 	/**
 	 * Executions of this program.
 	 */
-	@Column
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="program")
 	private Set<Execution> executions;
 	

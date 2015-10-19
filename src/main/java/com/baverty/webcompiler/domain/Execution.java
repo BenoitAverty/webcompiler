@@ -1,14 +1,16 @@
 package com.baverty.webcompiler.domain;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-
-import org.hibernate.annotations.Type;
+import javax.persistence.OneToMany;
 
 import com.baverty.webcompiler.domain.enumtypes.ExecutionStatus;
 import com.baverty.webcompiler.domain.enumtypes.ExecutionStatusConverter;
@@ -35,6 +37,7 @@ public class Execution {
 	/**
 	 * The program related to this execution.
 	 */
+	@Column
 	@ManyToOne
 	private Program program;
 	
@@ -48,7 +51,6 @@ public class Execution {
 	/**
 	 * The output of the execution.
 	 */
-	@Column
-	@Type(type="text")
-	private String output;
+	@OneToMany(fetch=FetchType.LAZY, mappedBy="execution")
+	private Set<OutputChunk> output;
 }

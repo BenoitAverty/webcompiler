@@ -44,7 +44,7 @@ public class ExecutionService {
 			e.setOutput(output);
 			e.setStatus(ExecutionStatus.EXECUTED);
 		}
-		catch(Exception ex) {
+		catch(RuntimeException ex) {
 			e.setStatus(ExecutionStatus.EXECUTION_ERROR);
 			// TODO log something
 		}
