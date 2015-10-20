@@ -1,10 +1,15 @@
 package com.baverty.webcompiler.services;
 
+import java.io.InputStream;
+import java.util.Set;
+
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.baverty.webcompiler.domain.OutputChunk;
 import com.baverty.webcompiler.domain.Program;
 import com.baverty.webcompiler.domain.enumtypes.ProgramStatus;
 import com.baverty.webcompiler.repositories.ProgramsRepository;
@@ -45,6 +50,7 @@ public class CompilationService {
 	 *            the program to compile
 	 */
 	@Async
+	@Transactional
 	public void compile(Program p) {
 
 		try {
@@ -54,8 +60,10 @@ public class CompilationService {
 	
 			// Try to compile the program using this container.
 			dockerManagementService.transferSourceCode(p.getSourceCode(), containerId);
-			String compilationOutput = dockerManagementService.compile(p.getContainerId());
-			p.setCompilationOutput(compilationOutput);
+			InputStream compilationOutput = dockerManagementService.compile(p.getContainerId());
+			
+			Set<OutputChunk> chunks = dockerManagementService.splitOutput(compilationOutput);
+			p.setCompilationOutput(chunks);
 	
 			// Check that the compilation was successful
 			if(dockerManagementService.checkProgramOnContainer(containerId)) {

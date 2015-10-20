@@ -11,10 +11,11 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
-import org.hibernate.mapping.Collection;
 
 import com.baverty.webcompiler.domain.enumtypes.OutputStreamType;
 import com.baverty.webcompiler.domain.enumtypes.OutputStreamTypeConverter;
+
+import lombok.Data;
 
 /**
  * Represent a chunk of output of either a program compilation or an execution.
@@ -27,6 +28,7 @@ import com.baverty.webcompiler.domain.enumtypes.OutputStreamTypeConverter;
  *
  */
 @Entity
+@Data
 public class OutputChunk {
 
 	/**

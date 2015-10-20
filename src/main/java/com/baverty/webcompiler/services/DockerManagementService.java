@@ -2,9 +2,13 @@ package com.baverty.webcompiler.services;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidParameterException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -12,7 +16,8 @@ import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
-import com.baverty.webcompiler.services.dto.ProgramOutput;
+import com.baverty.webcompiler.domain.OutputChunk;
+import com.baverty.webcompiler.domain.enumtypes.OutputStreamType;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
@@ -30,7 +35,7 @@ public class DockerManagementService {
 	 */
 	@Inject
 	private DockerClient docker;
-	
+
 	/**
 	 * The tcp service used to send data to containers.
 	 */
@@ -42,7 +47,6 @@ public class DockerManagementService {
 	 */
 	private Map<String, CreateContainerResponse> containers;
 
-	
 	public DockerManagementService() {
 		containers = new HashMap<String, CreateContainerResponse>();
 	}
@@ -104,7 +108,7 @@ public class DockerManagementService {
 	 *            the ID of the container in which to compile the code.
 	 * @return the output of the compiler
 	 */
-	public String compile(String containerId) {
+	public InputStream compile(String containerId) {
 
 		startContainer(containerId);
 
@@ -115,15 +119,7 @@ public class DockerManagementService {
 
 		InputStream cmdStream = docker.execStartCmd(containerId).withExecId(cmd.getId()).exec();
 
-		try {
-			String result = IOUtils.toString(cmdStream, "utf-8");
-			cmdStream.close();
-			return result;
-		} catch (IOException e) {
-			// Nothing can be done about an IOException at this point. Throw it
-			// back as a runtime exception.
-			throw new RuntimeException(e);
-		}
+		return cmdStream;
 	}
 
 	/**
@@ -153,25 +149,23 @@ public class DockerManagementService {
 	/**
 	 * Execute a program on a container.
 	 * 
+	 * Returns a set of Output chunks representing the output of the program,
+	 * created according to the <a href=
+	 * "https://docs.docker.com/reference/api/docker_remote_api_v1.20/#attach-to-a-container">
+	 * docker API spec</a>.
+	 * 
 	 * @param containerId
 	 *            the container where the program to run is located
 	 * @return the output of the program
 	 */
-	public ProgramOutput execute(String containerId) {
+	public InputStream execute(String containerId) {
 		startContainer(containerId);
 
 		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId).withCmd("/bin/sh", "-c", "/home/program.exe 2>&1")
 				.withAttachStdout().exec();
 		InputStream cmdStream = docker.execStartCmd(containerId).withExecId(cmd.getId()).exec();
-		
-		while(cmdStream.read)
-		try {
-			return IOUtils.toString(cmdStream);
-		} catch (IOException e) {
-			// Nothing can be done about an IOException at this point. Throw it
-			// back as a runtime exception.
-			throw new RuntimeException(e);
-		}
+
+		return cmdStream;
 
 	}
 
@@ -203,5 +197,66 @@ public class DockerManagementService {
 			docker.stopContainerCmd(containerId).exec();
 			docker.removeContainerCmd(containerId).exec();
 		}
+	}
+
+	/**
+	 * Split the output of a docker command into chunks.
+	 * 
+	 * @see OutputChunk
+	 * @param cmdStream
+	 *            the inputstream resulting from the docker command.
+	 * @return a set of orphan output chunks belonging to no execution or
+	 *         compilation.
+	 */
+	public Set<OutputChunk> splitOutput(InputStream cmdStream) {
+
+		byte[] headerBuffer = new byte[8];
+		
+		Set<OutputChunk> result = new HashSet<OutputChunk>();
+		int currentIndex = 0;
+
+		try {
+			while (cmdStream.read(headerBuffer) > 0) {
+
+				OutputChunk chunk = new OutputChunk();
+				
+				// Determine the type of the chunk based on the first byte of the header
+				switch (headerBuffer[0]) {
+				case 0:
+					chunk.setType(OutputStreamType.STDIN);
+					break;
+				case 1:
+					chunk.setType(OutputStreamType.STDIN);
+					break;
+				case 2:
+					chunk.setType(OutputStreamType.STDIN);
+					break;
+				default:
+					throw new InvalidParameterException(
+							"Invalid header format in the input stream. The stream might not come from docker API");
+				}
+				
+				// Determine the size of the chunk based on the last 4 bytes of the header
+				ByteBuffer bb = ByteBuffer.wrap(headerBuffer);
+				int size = bb.getInt(4);
+				
+				// Read the chunk
+				byte[] contentBuffer = new byte[size];
+				if(cmdStream.read(contentBuffer) < size) {
+					throw new InvalidParameterException(
+							"Not enough bytes in the input stream. The stream might not come from docker API");
+				}
+				chunk.setContent(new String(contentBuffer, StandardCharsets.UTF_8));
+				
+				// Remember the index of this chunk related to ther chunks
+				chunk.setIndex(currentIndex++);
+				
+				result.add(chunk);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		return null;
 	}
 }

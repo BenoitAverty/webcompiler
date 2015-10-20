@@ -5,6 +5,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.InputStream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -55,7 +57,7 @@ public class CompilationServiceTest {
 		final String containerId = "mockContainerId";
 
 		when(dockerService.getContainer()).thenReturn(containerId);
-		when(dockerService.compile(anyString())).thenReturn(compilationOutput);
+		when(dockerService.compile(anyString())).thenReturn();
 		when(dockerService.checkProgramOnContainer(containerId)).thenReturn(true);
 
 		Program program = Mockito.mock(Program.class);

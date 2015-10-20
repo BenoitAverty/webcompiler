@@ -1,11 +1,16 @@
 package com.baverty.webcompiler.services;
 
+import java.io.InputStream;
+import java.util.Set;
+
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.baverty.webcompiler.domain.Execution;
+import com.baverty.webcompiler.domain.OutputChunk;
 import com.baverty.webcompiler.domain.Program;
 import com.baverty.webcompiler.domain.enumtypes.ExecutionStatus;
 import com.baverty.webcompiler.repositories.ExecutionsRepository;
@@ -36,12 +41,14 @@ public class ExecutionService {
 	 * @param e The program to execute.
 	 */
 	@Async
+	@Transactional
 	public void execute(Execution e) {
 		
 		Program p = e.getProgram();
 		try {
-			String output = dockerManagementService.execute(p.getContainerId());
-			e.setOutput(output);
+			InputStream output = dockerManagementService.execute(p.getContainerId());
+			Set<OutputChunk> chunks = dockerManagementService.splitOutput(output);
+			e.setOutput(chunks);
 			e.setStatus(ExecutionStatus.EXECUTED);
 		}
 		catch(RuntimeException ex) {
