@@ -106,7 +106,7 @@ public class DockerManagementService {
 	 * 
 	 * @param containerId
 	 *            the ID of the container in which to compile the code.
-	 * @return the output of the compiler
+	 * @return the output of the compiler as an InputStream
 	 */
 	public InputStream compile(String containerId) {
 
@@ -127,6 +127,7 @@ public class DockerManagementService {
 	 * 
 	 * @param containerId
 	 *            the container where the program should be
+	 * @return true if the program is present, false otherwise
 	 */
 	public boolean checkProgramOnContainer(String containerId) {
 		startContainer(containerId);
@@ -149,10 +150,7 @@ public class DockerManagementService {
 	/**
 	 * Execute a program on a container.
 	 * 
-	 * Returns a set of Output chunks representing the output of the program,
-	 * created according to the <a href=
-	 * "https://docs.docker.com/reference/api/docker_remote_api_v1.20/#attach-to-a-container">
-	 * docker API spec</a>.
+	 * Returns an InputStream containing the output of the execution.
 	 * 
 	 * @param containerId
 	 *            the container where the program to run is located
@@ -167,6 +165,67 @@ public class DockerManagementService {
 
 		return cmdStream;
 
+	}
+	
+	/**
+	 * Split the output of a docker command into chunks.
+	 * 
+	 * @see OutputChunk
+	 * @param cmdStream
+	 *            the inputstream resulting from the docker command.
+	 * @return a set of orphan output chunks belonging to no execution or
+	 *         compilation.
+	 */
+	public Set<OutputChunk> splitOutput(InputStream cmdStream) {
+
+		byte[] headerBuffer = new byte[8];
+		
+		Set<OutputChunk> result = new HashSet<OutputChunk>();
+		int currentIndex = 0;
+
+		try {
+			while (cmdStream.read(headerBuffer) > 0) {
+
+				OutputChunk chunk = new OutputChunk();
+				
+				// Determine the type of the chunk based on the first byte of the header
+				switch (headerBuffer[0]) {
+				case 0:
+					chunk.setType(OutputStreamType.STDIN);
+					break;
+				case 1:
+					chunk.setType(OutputStreamType.STDOUT);
+					break;
+				case 2:
+					chunk.setType(OutputStreamType.STDERR);
+					break;
+				default:
+					throw new InvalidParameterException(
+							"Invalid header format in the input stream. The stream might not come from docker API");
+				}
+				
+				// Determine the size of the chunk based on the last 4 bytes of the header
+				ByteBuffer bb = ByteBuffer.wrap(headerBuffer);
+				int size = bb.getInt(4);
+				
+				// Read the chunk
+				byte[] contentBuffer = new byte[size];
+				if(cmdStream.read(contentBuffer) < size) {
+					throw new InvalidParameterException(
+							"Not enough bytes in the input stream. The stream might not come from docker API");
+				}
+				chunk.setContent(new String(contentBuffer, StandardCharsets.UTF_8));
+				
+				// Remember the index of this chunk related to ther chunks
+				chunk.setIndex(currentIndex++);
+				
+				result.add(chunk);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		return result;
 	}
 
 	/**
@@ -197,66 +256,5 @@ public class DockerManagementService {
 			docker.stopContainerCmd(containerId).exec();
 			docker.removeContainerCmd(containerId).exec();
 		}
-	}
-
-	/**
-	 * Split the output of a docker command into chunks.
-	 * 
-	 * @see OutputChunk
-	 * @param cmdStream
-	 *            the inputstream resulting from the docker command.
-	 * @return a set of orphan output chunks belonging to no execution or
-	 *         compilation.
-	 */
-	public Set<OutputChunk> splitOutput(InputStream cmdStream) {
-
-		byte[] headerBuffer = new byte[8];
-		
-		Set<OutputChunk> result = new HashSet<OutputChunk>();
-		int currentIndex = 0;
-
-		try {
-			while (cmdStream.read(headerBuffer) > 0) {
-
-				OutputChunk chunk = new OutputChunk();
-				
-				// Determine the type of the chunk based on the first byte of the header
-				switch (headerBuffer[0]) {
-				case 0:
-					chunk.setType(OutputStreamType.STDIN);
-					break;
-				case 1:
-					chunk.setType(OutputStreamType.STDIN);
-					break;
-				case 2:
-					chunk.setType(OutputStreamType.STDIN);
-					break;
-				default:
-					throw new InvalidParameterException(
-							"Invalid header format in the input stream. The stream might not come from docker API");
-				}
-				
-				// Determine the size of the chunk based on the last 4 bytes of the header
-				ByteBuffer bb = ByteBuffer.wrap(headerBuffer);
-				int size = bb.getInt(4);
-				
-				// Read the chunk
-				byte[] contentBuffer = new byte[size];
-				if(cmdStream.read(contentBuffer) < size) {
-					throw new InvalidParameterException(
-							"Not enough bytes in the input stream. The stream might not come from docker API");
-				}
-				chunk.setContent(new String(contentBuffer, StandardCharsets.UTF_8));
-				
-				// Remember the index of this chunk related to ther chunks
-				chunk.setIndex(currentIndex++);
-				
-				result.add(chunk);
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		return null;
 	}
 }

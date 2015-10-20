@@ -4,10 +4,10 @@ import java.io.InputStream;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baverty.webcompiler.domain.OutputChunk;
 import com.baverty.webcompiler.domain.Program;
@@ -63,6 +63,10 @@ public class CompilationService {
 			InputStream compilationOutput = dockerManagementService.compile(p.getContainerId());
 			
 			Set<OutputChunk> chunks = dockerManagementService.splitOutput(compilationOutput);
+			
+			for(OutputChunk c : chunks) {
+				c.setProgram(p);
+			}
 			p.setCompilationOutput(chunks);
 	
 			// Check that the compilation was successful

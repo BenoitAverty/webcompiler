@@ -2,6 +2,7 @@ package com.baverty.webcompiler.domain;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -52,6 +53,6 @@ public class Execution {
 	/**
 	 * The output of the execution.
 	 */
-	@OneToMany(fetch=FetchType.LAZY, mappedBy="execution")
+	@OneToMany(fetch=FetchType.LAZY, mappedBy="execution", cascade={CascadeType.ALL})
 	private Set<OutputChunk> output;
 }

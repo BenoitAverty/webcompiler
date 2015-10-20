@@ -3,6 +3,7 @@ package com.baverty.webcompiler.domain;
 import java.io.Serializable;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -79,7 +80,7 @@ public class Program implements Serializable {
 	/**
 	 * Executions of this program.
 	 */
-	@OneToMany(fetch=FetchType.LAZY, mappedBy="program")
+	@OneToMany(fetch=FetchType.LAZY, mappedBy="program", cascade={CascadeType.ALL})
 	private Set<Execution> executions;
 	
 

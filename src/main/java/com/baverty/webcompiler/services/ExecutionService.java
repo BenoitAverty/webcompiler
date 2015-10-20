@@ -4,10 +4,10 @@ import java.io.InputStream;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baverty.webcompiler.domain.Execution;
 import com.baverty.webcompiler.domain.OutputChunk;
@@ -48,7 +48,12 @@ public class ExecutionService {
 		try {
 			InputStream output = dockerManagementService.execute(p.getContainerId());
 			Set<OutputChunk> chunks = dockerManagementService.splitOutput(output);
+			
+			for(OutputChunk c : chunks) {
+				c.setExecution(e);
+			}
 			e.setOutput(chunks);
+			
 			e.setStatus(ExecutionStatus.EXECUTED);
 		}
 		catch(RuntimeException ex) {
