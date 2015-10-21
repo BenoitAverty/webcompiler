@@ -73,15 +73,13 @@
 				<div data-ng-show="compilerCtrl.compilationOutput.length > 0">
 					<h4>Compilation result</h4>
 					<p>
-						{{compilerCtrl.compilationOutput}}
+						<pre>{{compilerCtrl.compilationOutput}}</pre>
 					</p>
 				</div>
 				<div data-ng-show="compilerCtrl.executionOutput.length > 0">
 					<h4>Program output</h4>
 					<p>
-						<pre>
-							{{compilerCtrl.executionOutput}}
-						</pre>
+						<pre>{{compilerCtrl.executionOutput}}</pre>
 					</p>
 				</div>
 

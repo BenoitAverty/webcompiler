@@ -1,9 +1,6 @@
 package com.baverty.webcompiler.controllers.responseobjects;
 
-import java.util.Set;
-
 import com.baverty.webcompiler.controllers.ExecutionsController;
-import com.baverty.webcompiler.domain.OutputChunk;
 import com.baverty.webcompiler.domain.enumtypes.ExecutionStatus;
 
 /**
@@ -14,5 +11,5 @@ import com.baverty.webcompiler.domain.enumtypes.ExecutionStatus;
  */
 public class GetExecutionStatusResponse {
 	public ExecutionStatus status;
-	public Set<OutputChunk> executionOutput;
+	public String executionOutput;
 }

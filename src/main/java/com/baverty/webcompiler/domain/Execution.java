@@ -59,4 +59,18 @@ public class Execution {
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="execution", cascade={CascadeType.ALL})
 	@JsonIgnore
 	private Set<OutputChunk> output;
+	
+	/**
+	 * Returns the output of the execution as a string.
+	 * 
+	 * The output of this method doesn't have any information about chunks and their type (stdin, stdout, stderr).
+	 */
+	public String getOutput() {
+		
+		return output.stream()
+			.sorted((c1, c2) -> c1.getIndex().compareTo(c2.getIndex()))
+			.map(c -> c.getContent())
+			.reduce((s1, s2) -> s1+s2)
+			.orElse("");
+	}
 }

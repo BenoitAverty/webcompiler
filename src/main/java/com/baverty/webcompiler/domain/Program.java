@@ -31,7 +31,7 @@ import lombok.EqualsAndHashCode;
  */
 @Entity
 @Data
-@EqualsAndHashCode(exclude={"compilationOutput", "executions"})
+@EqualsAndHashCode(exclude = { "compilationOutput", "executions" })
 public class Program {
 
 	/**
@@ -57,29 +57,41 @@ public class Program {
 	 * Id of the container assigned to this program.
 	 */
 	@Column
-	@Length(max=64)
+	@Length(max = 64)
 	private String containerId;
 
 	/**
 	 * SourceCode of the program.
 	 */
 	@Column
-	@Type(type="text")
+	@Type(type = "text")
 	private String sourceCode;
 
 	/**
 	 * Result of the compilation of the program.
 	 */
-	@OneToMany(fetch=FetchType.LAZY, mappedBy="program")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "program")
 	@JsonIgnore
 	private Set<OutputChunk> compilationOutput;
-	
+
 	/**
 	 * Executions of this program.
 	 */
-	@OneToMany(fetch=FetchType.LAZY, mappedBy="program", cascade={CascadeType.ALL})
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "program", cascade = { CascadeType.ALL })
 	@JsonIgnore
 	private Set<Execution> executions;
-	
+
+	/**
+	 * Returns the output of the compilation as a string.
+	 * 
+	 * The output of this method doesn't have any information about chunks and their type (stdin, stdout, stderr).
+	 */
+	public String getCompilationOutput() {
+		return compilationOutput.stream()
+				.sorted((c1, c2) -> c1.getIndex().compareTo(c2.getIndex()))
+				.map(c -> c.getContent())
+				.reduce((s1, s2) -> s1+s2)
+				.orElse("");
+	}
 
 }
