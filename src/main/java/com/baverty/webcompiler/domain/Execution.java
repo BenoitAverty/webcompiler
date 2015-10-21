@@ -16,8 +16,10 @@ import javax.persistence.OneToMany;
 
 import com.baverty.webcompiler.domain.enumtypes.ExecutionStatus;
 import com.baverty.webcompiler.domain.enumtypes.ExecutionStatusConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * An execution of a program.
@@ -27,6 +29,7 @@ import lombok.Data;
  */
 @Entity
 @Data
+@EqualsAndHashCode(exclude={"output"})
 public class Execution {
 
 	/**
@@ -54,5 +57,6 @@ public class Execution {
 	 * The output of the execution.
 	 */
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="execution", cascade={CascadeType.ALL})
+	@JsonIgnore
 	private Set<OutputChunk> output;
 }

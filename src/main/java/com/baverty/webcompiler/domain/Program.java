@@ -1,6 +1,5 @@
 package com.baverty.webcompiler.domain;
 
-import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -18,8 +17,10 @@ import org.hibernate.validator.constraints.Length;
 
 import com.baverty.webcompiler.domain.enumtypes.ProgramStatus;
 import com.baverty.webcompiler.domain.enumtypes.ProgramStatusConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * A program managed by the application.
@@ -30,12 +31,8 @@ import lombok.Data;
  */
 @Entity
 @Data
-public class Program implements Serializable {
-
-	/**
-	 * Serial version UID.
-	 */
-	private static final long serialVersionUID = 6135137973275371882L;
+@EqualsAndHashCode(exclude={"compilationOutput", "executions"})
+public class Program {
 
 	/**
 	 * Technical ID of the program.
@@ -73,14 +70,15 @@ public class Program implements Serializable {
 	/**
 	 * Result of the compilation of the program.
 	 */
-	@Column
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="program")
+	@JsonIgnore
 	private Set<OutputChunk> compilationOutput;
 	
 	/**
 	 * Executions of this program.
 	 */
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="program", cascade={CascadeType.ALL})
+	@JsonIgnore
 	private Set<Execution> executions;
 	
 
