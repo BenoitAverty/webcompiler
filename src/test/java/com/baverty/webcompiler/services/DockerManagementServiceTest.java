@@ -203,7 +203,7 @@ public class DockerManagementServiceTest {
 		ExecStartCmd startCmd = mock(ExecStartCmd.class, new AnswerWithSelf(ExecStartCmd.class));
 		when(docker.execCreateCmd(anyString())).thenReturn(createCmd);
 		when(docker.execStartCmd(anyString())).thenReturn(startCmd);
-		when(startCmd.exec()).thenReturn(IOUtils.toInputStream("/home/program.exe")).thenReturn(IOUtils.toInputStream(""));
+		when(startCmd.exec()).thenReturn(IOUtils.toInputStream("/home/execution.exe")).thenReturn(IOUtils.toInputStream(""));
 
 		// Call method to test
 		boolean result1 = dockerManagementService.checkProgramOnContainer(containerId);

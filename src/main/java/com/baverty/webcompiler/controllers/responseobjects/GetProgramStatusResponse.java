@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * Response object for GET /program/(id)/status endpoint.
+ * Response object for GET /execution/(id)/status endpoint.
  * 
  * @see ProgramsController#getProgramStatus(Long)
  *

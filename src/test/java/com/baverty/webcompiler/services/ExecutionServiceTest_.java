@@ -17,7 +17,7 @@ import com.baverty.webcompiler.domain.Program;
 import com.baverty.webcompiler.domain.enumtypes.ExecutionStatus;
 import com.baverty.webcompiler.repositories.ExecutionsRepository;
 
-public class ExecutionServiceTest {
+public class ExecutionServiceTest_ {
 
 	/**
 	 * Service to test

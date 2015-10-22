@@ -19,7 +19,7 @@ import com.baverty.webcompiler.domain.enumtypes.OutputStreamTypeConverter;
 import lombok.Data;
 
 /**
- * Represent a chunk of output of either a program compilation or an execution.
+ * Represent a chunk of output of either a execution compilation or an execution.
  * 
  * The output of a compilation or execution can be of several types : STDIN(0),
  * STDOUT(1) or STDERR(2). This entity represents a chunk of the output, its
@@ -42,7 +42,7 @@ public class OutputChunk {
 	
 
 	/**
-	 * A program, the compilation of which contains this output chunk.
+	 * A execution, the compilation of which contains this output chunk.
 	 * 
 	 * Mutually exclusive with {@link #execution}
 	 */
@@ -51,9 +51,9 @@ public class OutputChunk {
 	private Program program;
 
 	/**
-	 * The execution of a program which contains this output chunk.
+	 * The execution of a execution which contains this output chunk.
 	 * 
-	 * Mutually exclusive with {@link #program}
+	 * Mutually exclusive with {@link #execution}
 	 */
 	@ManyToOne
 	@JoinColumn(name = "execution_tid")

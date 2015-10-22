@@ -50,15 +50,15 @@ public class ProgramsController {
 	private ExecutionService executionService;
 
 	/**
-	 * Create a program.
+	 * Create a execution.
 	 * 
-	 * If the program needs to be compiled, the compilation will be launched
+	 * If the execution needs to be compiled, the compilation will be launched
 	 * asynchronously by this webservice.
 	 * 
 	 * @param body
 	 *            The body of the request should contain the source code to
 	 *            compile
-	 * @return A unique ID representing the program in the system. The id will
+	 * @return A unique ID representing the execution in the system. The id will
 	 *         be used for all further interactions with the API
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/programs")
@@ -88,10 +88,10 @@ public class ProgramsController {
 	}
 
 	/**
-	 * Retrieve the status of a program.
+	 * Retrieve the status of a execution.
 	 * 
 	 * @param tid
-	 *            The tid of the program
+	 *            The tid of the execution
 	 * @return A structure containing the status and information related to the
 	 *         status
 	 */
@@ -108,10 +108,10 @@ public class ProgramsController {
 	}
 
 	/**
-	 * Execute a program.
+	 * Execute a execution.
 	 * 
 	 * @param tid
-	 *            The tid of the program
+	 *            The tid of the execution
 	 * @return the ID of the execution launched
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/programs/{tid}/executions")

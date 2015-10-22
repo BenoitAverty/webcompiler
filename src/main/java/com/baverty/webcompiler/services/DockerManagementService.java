@@ -52,7 +52,7 @@ public class DockerManagementService {
 	}
 
 	/**
-	 * Retrieve a container suitable for compilation and execution of a program.
+	 * Retrieve a container suitable for compilation and execution of a execution.
 	 * 
 	 * @return the ID of the container that was created
 	 */
@@ -71,7 +71,7 @@ public class DockerManagementService {
 	}
 
 	/**
-	 * Transfer the source code of a program to a file in the container.
+	 * Transfer the source code of a execution to a file in the container.
 	 * 
 	 * @param sourceCode
 	 *            the source code to send into the container
@@ -85,7 +85,7 @@ public class DockerManagementService {
 		// Create the command that will listen to tcp connection and write
 		// result to a file
 		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId)
-				.withCmd("/bin/sh", "-c", "nc -l -p 8080 > /home/program.c").withTty().exec();
+				.withCmd("/bin/sh", "-c", "nc -l -p 8080 > /home/execution.c").withTty().exec();
 
 		// Start netcat
 		docker.execStartCmd(containerId).withExecId(cmd.getId()).withDetach().exec();
@@ -114,7 +114,7 @@ public class DockerManagementService {
 
 		// Compile
 		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId)
-				.withCmd("gcc", "-o", "/home/program.exe", "/home/program.c").withTty().withAttachStdout()
+				.withCmd("gcc", "-o", "/home/execution.exe", "/home/execution.c").withTty().withAttachStdout()
 				.withAttachStderr().exec();
 
 		InputStream cmdStream = docker.execStartCmd(containerId).withExecId(cmd.getId()).exec();
@@ -123,22 +123,22 @@ public class DockerManagementService {
 	}
 
 	/**
-	 * Check that the program is present on the container.
+	 * Check that the execution is present on the container.
 	 * 
 	 * @param containerId
-	 *            the container where the program should be
-	 * @return true if the program is present, false otherwise
+	 *            the container where the execution should be
+	 * @return true if the execution is present, false otherwise
 	 */
 	public boolean checkProgramOnContainer(String containerId) {
 		startContainer(containerId);
 
-		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId).withCmd("ls", "/home/program.exe")
+		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId).withCmd("ls", "/home/execution.exe")
 				.withAttachStdout().exec();
 
 		InputStream cmdStream = docker.execStartCmd(containerId).withExecId(cmd.getId()).exec();
 
 		try {
-			return IOUtils.toString(cmdStream).trim().equals("/home/program.exe");
+			return IOUtils.toString(cmdStream).trim().equals("/home/execution.exe");
 		} catch (IOException e) {
 			// Nothing can be done about an IOException at this point. Throw it
 			// back as a runtime exception.
@@ -148,18 +148,18 @@ public class DockerManagementService {
 	}
 
 	/**
-	 * Execute a program on a container.
+	 * Execute a execution on a container.
 	 * 
 	 * Returns an InputStream containing the output of the execution.
 	 * 
 	 * @param containerId
-	 *            the container where the program to run is located
-	 * @return the output of the program
+	 *            the container where the execution to run is located
+	 * @return the output of the execution
 	 */
 	public InputStream execute(String containerId) {
 		startContainer(containerId);
 
-		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId).withCmd("/bin/sh", "-c", "/home/program.exe 2>&1")
+		ExecCreateCmdResponse cmd = docker.execCreateCmd(containerId).withCmd("/bin/sh", "-c", "/home/execution.exe 2>&1")
 				.withAttachStdout().exec();
 		InputStream cmdStream = docker.execStartCmd(containerId).withExecId(cmd.getId()).exec();
 

@@ -23,9 +23,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * A program managed by the application.
+ * A execution managed by the application.
  * 
- * Contains information about a program (Source Code, Language, ...) and
+ * Contains information about a execution (Source Code, Language, ...) and
  * information about its lifecycle (status, compilation output...)
  *
  */
@@ -35,14 +35,14 @@ import lombok.EqualsAndHashCode;
 public class Program {
 
 	/**
-	 * Technical ID of the program.
+	 * Technical ID of the execution.
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long tid;
 
 	/**
-	 * Status of the program.
+	 * Status of the execution.
 	 * 
 	 * Stored in database as an int
 	 * 
@@ -54,30 +54,30 @@ public class Program {
 	private ProgramStatus status;
 
 	/**
-	 * Id of the container assigned to this program.
+	 * Id of the container assigned to this execution.
 	 */
 	@Column
 	@Length(max = 64)
 	private String containerId;
 
 	/**
-	 * SourceCode of the program.
+	 * SourceCode of the execution.
 	 */
 	@Column
 	@Type(type = "text")
 	private String sourceCode;
 
 	/**
-	 * Result of the compilation of the program.
+	 * Result of the compilation of the execution.
 	 */
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "program")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "execution")
 	@JsonIgnore
 	private Set<OutputChunk> compilationOutput;
 
 	/**
-	 * Executions of this program.
+	 * Executions of this execution.
 	 */
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "program", cascade = { CascadeType.ALL })
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "execution", cascade = { CascadeType.ALL })
 	@JsonIgnore
 	private Set<Execution> executions;
 

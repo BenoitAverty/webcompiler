@@ -33,12 +33,12 @@ public class ExecutionService {
 	private DockerManagementService dockerManagementService;
 	
 	/**
-	 * Launch the execution of a program.
+	 * Launch the execution of a execution.
 	 * 
 	 * This method is asynchronous. It starts the compilation and it's up to the
 	 * user of the service to check in the DB if the status of the execution changed to finished.
 	 * 
-	 * @param e The program to execute.
+	 * @param e The execution to execute.
 	 */
 	@Async
 	@Transactional

@@ -59,8 +59,8 @@ public class ProgramsControllerTest {
 	 * Test the {@link ProgramsController#postProgram(String)} method.
 	 * 
 	 * This method handles the POST /programs endpoint, and should create a
-	 * program via the repository, then launch the compilation and return a new
-	 * program ID.
+	 * execution via the repository, then launch the compilation and return a new
+	 * execution ID.
 	 */
 	@Test
 	public void testPostProgram() {
@@ -87,9 +87,9 @@ public class ProgramsControllerTest {
 	 * Test the {@link ProgramsController#postProgram(String)} method when a
 	 * persistance exception occurs.
 	 * 
-	 * When posting a new program, the controller might fail to create the
+	 * When posting a new execution, the controller might fail to create the
 	 * Program entity. In that case, the controller should answer with a null
-	 * program ID and a KO status.
+	 * execution ID and a KO status.
 	 * 
 	 * Warning suppressed to allow the use of "thenThrow" method with a class parameter.
 	 * 

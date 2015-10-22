@@ -22,7 +22,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * An execution of a program.
+ * An execution of a execution.
  * 
  * Contains the information about the execution : status, output, ...
  *
@@ -40,7 +40,7 @@ public class Execution {
 	private Long tid;
 	
 	/**
-	 * The program related to this execution.
+	 * The execution related to this execution.
 	 */
 	@ManyToOne
 	@JoinColumn(name="program_tid")

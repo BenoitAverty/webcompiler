@@ -35,30 +35,30 @@ public class CompilationService {
 	private DockerManagementService dockerManagementService;
 
 	/**
-	 * Compile the given program.
+	 * Compile the given execution.
 	 *
 	 * <ol>
 	 * <li>Retrieve a suitable Docker container</li>
 	 * <li>Compile the source code in the container</li>
-	 * <li>Set the program status to COMPILED once finished (or COMPILE_ERROR if failure)</li>
+	 * <li>Set the execution status to COMPILED once finished (or COMPILE_ERROR if failure)</li>
 	 * </ol>
 	 *
 	 * This method is asynchronous. It starts the compilation and it's up to the
 	 * user of the service to check in the DB if the status changed to compile.
 	 *
 	 * @param p
-	 *            the program to compile
+	 *            the execution to compile
 	 */
 	@Async
 	@Transactional
 	public void compile(Program p) {
 
 		try {
-			// Get a container suitable for this program
+			// Get a container suitable for this execution
 			String containerId = dockerManagementService.getContainer();
 			p.setContainerId(containerId);
 	
-			// Try to compile the program using this container.
+			// Try to compile the execution using this container.
 			dockerManagementService.transferSourceCode(p.getSourceCode(), containerId);
 			InputStream compilationOutput = dockerManagementService.compile(p.getContainerId());
 			

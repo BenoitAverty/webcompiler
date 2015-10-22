@@ -25,7 +25,7 @@ public class ExecutionsController {
 	 * Retrieve the result of an execution.
 	 * 
 	 * @param tid The technical id of the execution to retrieve.
-	 * @return an object of type {@link GetExecutionStatusResponse} representing the result of the execution of the program.
+	 * @return an object of type {@link GetExecutionStatusResponse} representing the result of the execution of the execution.
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = "/executions/{tid}/status")
 	public GetExecutionStatusResponse getExecutionStatus(@PathVariable long tid) {
