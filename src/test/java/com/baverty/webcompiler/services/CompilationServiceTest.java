@@ -1,121 +1,104 @@
 package com.baverty.webcompiler.services;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.never;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.internal.stubbing.answers.CallsRealMethods;
 
+import com.baverty.webcompiler.domain.OutputChunk;
 import com.baverty.webcompiler.domain.Program;
 import com.baverty.webcompiler.domain.enumtypes.ProgramStatus;
 import com.baverty.webcompiler.repositories.ProgramsRepository;
+import com.nitorcreations.junit.runners.NestedRunner;
 
+@RunWith(NestedRunner.class)
 public class CompilationServiceTest {
 
-	/**
-	 * Service to test
-	 */
 	@InjectMocks
-	private CompilationService compilationService;
+	private CompilationService service;
 
-	/** Programs repository mock. */
 	@Mock
 	private ProgramsRepository programsRepository;
-	/** docker service mock. */
+
 	@Mock
 	private DockerManagementService dockerService;
 
-	/**
-	 * Setup instance of service to test and inject mocks into it.
-	 */
 	@Before
-	public void setup() {
-		compilationService = new CompilationService();
-
+	public void beforeEach() {
+		service = new CompilationService();
 		MockitoAnnotations.initMocks(this);
 	}
 
-	/**
-	 * Test the method {@link CompilationService#compile(Program)} in the
-	 * nominal case.
-	 * 
-	 * In the nominal case, this method takes a program and should set its
-	 * status to COMPILED and its output to the compilation output, then save it
-	 * in the repository.
-	 */
-	@Test
-	public void testCompileNominal() {
-		final String compilationOutput = "";
-		final String containerId = "mockContainerId";
-
-		when(dockerService.getContainer()).thenReturn(containerId);
-		when(dockerService.compile(anyString())).thenReturn();
-		when(dockerService.checkProgramOnContainer(containerId)).thenReturn(true);
-
-		Program program = Mockito.mock(Program.class);
-
-		compilationService.compile(program);
-
-		verify(program).setCompilationOutput(compilationOutput);
-		verify(program).setStatus(ProgramStatus.COMPILED);
-		verify(programsRepository).save(program);
-	}
-
-	/**
-	 * Test the execution of the {@link CompilationService#compile(Program)}
-	 * method when the compilation fails.
-	 * 
-	 * In case of exception, the {@link CompilationService#compile(Program) compile}
-	 * method should set the status of the execution to EXECUTION_ERROR and not
-	 * fill the output.
-	 * 
-	 */
-	@Test
-	public void testCompileCompilationFailure() {
+	public class CompileMethod {
 		
-		final String compilationOutput = "mockCompilationOutput";
+		// Test constants / dummy values
+		final Set<OutputChunk> compilationOutputChunks = new HashSet<OutputChunk>();
 		final String containerId = "mockContainerId";
-
-		when(dockerService.compile(anyString())).thenReturn(compilationOutput);
-		when(dockerService.checkProgramOnContainer(containerId)).thenReturn(false);
-
-		Program program = Mockito.mock(Program.class);
-
-		compilationService.compile(program);
-
-		verify(program).setCompilationOutput(compilationOutput);
-		verify(program).setStatus(ProgramStatus.COMPILE_ERROR);
-		verify(programsRepository).save(program);
-	}
-	
-	/**
-	 * Test the execution of the {@link CompilationService#compile(Program)}
-	 * method when an exception occurs in the underlying docker service.
-	 * 
-	 * In case of exception, the {@link CompilationService#compile(Program) compile}
-	 * method should set the status of the program to COMPILE_ERROR and not
-	 * fill the output.
-	 * 
-	 */
-	@Test
-	public void testCompileDockerException() {
+		final Program program = Mockito.mock(Program.class, new CallsRealMethods());
 		
-		when(dockerService.compile(anyString())).thenThrow(new RuntimeException());
-
-		Program program = Mockito.mock(Program.class);
-
-		compilationService.compile(program);
-
-		verify(program, never()).setCompilationOutput(anyString());
-		verify(program).setStatus(ProgramStatus.COMPILE_ERROR);
-		verify(programsRepository).save(program);
+		@Before
+		public void beforeEach() {
+			when(dockerService.getContainer()).thenReturn(containerId);
+			when(dockerService.splitOutput(any(InputStream.class))).thenReturn(compilationOutputChunks);
+		}
+		
+		@Test
+		public void shouldSaveTheProgramUsingTheRepo() {
+			service.compile(program);
+			verify(programsRepository).save(program);
+		}
+		
+		
+		public class InTheNominalCase {
+			
+			@Before
+			public void beforeEach() {
+				when(dockerService.checkProgramOnContainer(containerId)).thenReturn(true);
+				service.compile(program);
+			}
+			
+			@Test
+			public void shouldSetTheCorrectCompilationOutputInTheProgram() {
+				verify(program).setCompilationOutput(compilationOutputChunks);
+			}
+			
+			@Test
+			public void shouldSetTheProgramStatusToCompiled() {
+				assertThat(program.getStatus()).isEqualTo(ProgramStatus.COMPILED);
+			}
+			
+		}
+		
+		public class InCaseOfCompilationFailure {
+			
+			@Before
+			public void beforeEach() {
+				when(dockerService.checkProgramOnContainer(containerId)).thenReturn(false);
+				service.compile(program);
+			}
+			
+			@Test
+			public void shouldSetTheCorrectCompilationOutputInTheProgram() {
+				verify(program).setCompilationOutput(compilationOutputChunks);
+			}
+			
+			@Test
+			public void shouldSetTheProgramStatusToCompileError() {
+				assertThat(program.getStatus()).isEqualTo(ProgramStatus.COMPILE_ERROR);
+			}
+		}
 	}
 }
