@@ -2,6 +2,8 @@ package com.baverty.webcompiler.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,6 +43,7 @@ public class CompilationServiceTest {
 		service = new CompilationService();
 		MockitoAnnotations.initMocks(this);
 	}
+
 
 	public class CompileMethod {
 		
@@ -98,6 +101,24 @@ public class CompilationServiceTest {
 			@Test
 			public void shouldSetTheProgramStatusToCompileError() {
 				assertThat(program.getStatus()).isEqualTo(ProgramStatus.COMPILE_ERROR);
+			}
+		}
+		
+		public class InCaseOfDockerException {
+			@Before
+			public void beforeEach() {
+				when(dockerService.compile(anyString())).thenThrow(new RuntimeException());
+				service.compile(program);
+			}
+			
+			@Test
+			public void shouldNotSetAnyCompilationOutput() {
+				verify(program, never()).setCompilationOutput(any());	
+			}
+			
+			@Test 
+			public void shouldSetTheProgramStatusToCompileError() {
+				verify(program).setStatus(ProgramStatus.COMPILE_ERROR);
 			}
 		}
 	}
