@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -25,9 +24,7 @@ import com.baverty.webcompiler.domain.Execution;
 import com.baverty.webcompiler.domain.OutputChunk;
 import com.baverty.webcompiler.domain.Program;
 import com.baverty.webcompiler.domain.enumtypes.ExecutionStatus;
-import com.baverty.webcompiler.domain.enumtypes.ProgramStatus;
 import com.baverty.webcompiler.repositories.ExecutionsRepository;
-import com.baverty.webcompiler.repositories.ProgramsRepository;
 import com.nitorcreations.junit.runners.NestedRunner;
 
 @RunWith(NestedRunner.class)

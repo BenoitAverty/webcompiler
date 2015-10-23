@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
  * Small service used to send data through tcp.
  */
 @Service
-public class TcpService {
+class TcpService {
 
 	/**
 	 * Send data through a socket.
