@@ -1,8 +1,16 @@
 #!/bin/sh
-COMMAND="java -jar target/webcompiler-0.0.1-SNAPSHOT.war --spring.profiles.active=prod"
+JAVA=$(which java)
+ARGS='-jar /home/benoit/webcompiler/target/webcompiler-0.0.1-SNAPSHOT.war --spring.profiles.active=prod'
+COMMAND="$JAVA $ARGS"
+PID=$(ps -ef | grep $COMMAND | grep -v grep | tr -s " " | cut -f2 -d" ")
 
 # Kill running process
-kill $(ps -ef | grep $COMMAND | grep -v grep | tr -s " " | cut -f2 -d" ")
+[ ! -z "$PID" ] && kill -INT $PID
+
+while [[ ! -z "$PID" ]]; do
+    sleep 5
+    PID=$(ps -ef | grep $COMMAND | grep -v grep | tr -s " " | cut -f2 -d" ")
+done
 
 #start it
-nohup $COMMAND &
+eval nohup $COMMAND &
