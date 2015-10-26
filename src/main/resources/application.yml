@@ -2,6 +2,3 @@
 docker:
   client:
     socket: unix:///var/run/docker.sock
-    
-server: 
-  port: 8080
