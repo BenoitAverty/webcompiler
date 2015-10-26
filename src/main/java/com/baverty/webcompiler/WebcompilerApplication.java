@@ -3,12 +3,7 @@ package com.baverty.webcompiler;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Collection;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import org.apache.catalina.filters.AddDefaultCharsetFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -45,7 +40,7 @@ public class WebcompilerApplication {
     	SimpleCommandLinePropertySource source = new SimpleCommandLinePropertySource(args);
     	if (!source.containsProperty("spring.profiles.active") &&
                 !System.getenv().containsKey("SPRING_PROFILES_ACTIVE")) {
-
+    		log.info("Using default profile.");
             app.setAdditionalProfiles(WebcompilerApplication.PROFILE_DEV);
         }
     	
