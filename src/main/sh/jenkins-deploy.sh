@@ -13,4 +13,4 @@ while [[ ! -z "$PID" ]]; do
 done
 
 #start it
-eval nohup '$COMMAND' > /dev/null 2>&1 &
+nohup $COMMAND > /dev/null 2>&1 &
