@@ -1,6 +1,6 @@
 #!/bin/sh
 JAVA=$(which java)
-ARGS='-jar /home/benoit/webcompiler/target/webcompiler-0.0.1-SNAPSHOT.war --spring.profiles.active=prod'
+ARGS="-jar $WORKSPACE/target/webcompiler-0.0.1-SNAPSHOT.war --spring.profiles.active=prod"
 COMMAND="$JAVA $ARGS"
 PID=$(ps -ef | grep $COMMAND | grep -v grep | tr -s " " | cut -f2 -d" ")
 
