@@ -70,14 +70,14 @@ public class Program {
 	/**
 	 * Result of the compilation of the execution.
 	 */
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "execution")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "program")
 	@JsonIgnore
 	private Set<OutputChunk> compilationOutput;
 
 	/**
 	 * Executions of this execution.
 	 */
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "execution", cascade = { CascadeType.ALL })
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "program", cascade = { CascadeType.ALL })
 	@JsonIgnore
 	private Set<Execution> executions;
 
