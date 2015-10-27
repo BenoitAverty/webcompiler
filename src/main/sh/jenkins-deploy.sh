@@ -4,8 +4,8 @@ ARGS="-jar $WORKSPACE/target/webcompiler-0.0.1-SNAPSHOT.war --spring.profiles.ac
 COMMAND="$JAVA $ARGS"
 PID=$(ps -ef | grep '$COMMAND' | grep -v grep | tr -s " " | cut -f2 -d" ")
 
-# Kill running process
-[ ! -z "$PID" ] && kill -INT $PID
+# Stop application
+curl -X POST http://localhost:8086/manage/shutdown
 
 while [[ ! -z "$PID" ]]; do
     sleep 5

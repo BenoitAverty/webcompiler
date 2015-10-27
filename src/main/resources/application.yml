@@ -2,3 +2,10 @@
 docker:
   client:
     socket: unix:///var/run/docker.sock
+management:
+  context-path: /manage
+endpoints: 
+  shutdown:
+    enabled: true
+    sensitive: false
+  

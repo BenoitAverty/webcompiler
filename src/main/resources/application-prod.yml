@@ -5,9 +5,13 @@ spring:
     active: prod
 server:
   port: 8085
+  address: 127.0.0.1
 logging:
   file: log/webcompiler.log
   level:
     org.hibernate: ERROR
     org.springframework: INFO
     com.baverty: INFO
+management:
+  port: 8086
+  address: 127.0.0.1
