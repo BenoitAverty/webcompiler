@@ -5,3 +5,8 @@ spring:
     active: dev
 server: 
   port: 8080
+logging:
+  level:
+    org.hibernate: INFO
+    org.springframework: INFO
+    com.baverty: DEBUG

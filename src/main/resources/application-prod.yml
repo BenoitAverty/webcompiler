@@ -1,5 +1,13 @@
 spring:
+  jpa:
+    show-sql: false
   profiles:
     active: prod
 server:
   port: 8085
+logging:
+  file: log/webcompiler.log
+  level:
+    org.hibernate: ERROR
+    org.springframework: INFO
+    com.baverty: INFO
