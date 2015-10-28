@@ -2,6 +2,8 @@
 docker:
   client:
     socket: unix:///var/run/docker.sock
+  host:
+    address: 127.0.0.1
 management:
   context-path: /manage
 endpoints: 

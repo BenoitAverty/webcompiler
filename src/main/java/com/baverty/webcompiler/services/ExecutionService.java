@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,8 @@ import com.baverty.webcompiler.repositories.ExecutionsRepository;
 @Service
 public class ExecutionService {
 
+	private static final Logger log = LoggerFactory.getLogger(ExecutionService.class);
+	
 	/**
 	 * Repository for Executions persistence.
 	 */
@@ -58,7 +62,7 @@ public class ExecutionService {
 		}
 		catch(RuntimeException ex) {
 			e.setStatus(ExecutionStatus.EXECUTION_ERROR);
-			// TODO log something
+			log.error("Unexpected error during execution " + e.toString() + " : " + ex.getMessage());
 		}
 		
 		executionsRepository.save(e);

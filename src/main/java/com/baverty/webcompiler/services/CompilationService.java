@@ -5,10 +5,13 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baverty.webcompiler.WebcompilerApplication;
 import com.baverty.webcompiler.domain.OutputChunk;
 import com.baverty.webcompiler.domain.Program;
 import com.baverty.webcompiler.domain.enumtypes.ProgramStatus;
@@ -20,6 +23,8 @@ import com.baverty.webcompiler.repositories.ProgramsRepository;
 @Service
 public class CompilationService {
 
+	private static final Logger log = LoggerFactory.getLogger(WebcompilerApplication.class);
+	
 	/**
 	 * Repository for Program persistence.
 	 */
@@ -79,7 +84,7 @@ public class CompilationService {
 		}
 		catch(RuntimeException e) {
 			p.setStatus(ProgramStatus.COMPILE_ERROR);
-			// TODO log something
+			log.error("Unexpected error during compilation of program " + p.toString() + " : " + e.getMessage());
 		}
 		finally {
 			programRepository.save(p);

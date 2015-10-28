@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
+import com.baverty.webcompiler.configuration.DockerHostConfiguration;
 import com.baverty.webcompiler.domain.OutputChunk;
 import com.baverty.webcompiler.domain.enumtypes.OutputStreamType;
 import com.github.dockerjava.api.DockerClient;
@@ -35,6 +36,12 @@ public class DockerManagementService {
 	 */
 	@Inject
 	private DockerClient docker;
+	
+	/**
+	 * Docker host information
+	 */
+	@Inject
+	private DockerHostConfiguration dockerHostConfig;
 
 	/**
 	 * The tcp service used to send data to containers.
@@ -95,7 +102,7 @@ public class DockerManagementService {
 				.get(new ExposedPort(8080))[0].getHostPort();
 
 		// Connect to the port and send source code
-		tcpService.sendData("localhost", hostPort, sourceCode);
+		tcpService.sendData(dockerHostConfig.getAddress(), hostPort, sourceCode);
 	}
 
 	/**
