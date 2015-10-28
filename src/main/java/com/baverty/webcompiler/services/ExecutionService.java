@@ -62,7 +62,7 @@ public class ExecutionService {
 		}
 		catch(RuntimeException ex) {
 			e.setStatus(ExecutionStatus.EXECUTION_ERROR);
-			log.error("Unexpected error during execution " + e.toString() + " : " + ex.getMessage());
+			log.error("Unexpected error during execution " + e.getTid() + " : " + ex.getMessage());
 		}
 		
 		executionsRepository.save(e);

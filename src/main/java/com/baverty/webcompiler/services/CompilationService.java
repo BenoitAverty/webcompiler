@@ -84,7 +84,7 @@ public class CompilationService {
 		}
 		catch(RuntimeException e) {
 			p.setStatus(ProgramStatus.COMPILE_ERROR);
-			log.error("Unexpected error during compilation of program " + p.toString() + " : " + e.getMessage());
+			log.error("Unexpected error during compilation of program " + p.getTid() + " : " + e.getMessage());
 		}
 		finally {
 			programRepository.save(p);

@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.internal.stubbing.defaultanswers.ReturnsDeepStubs;
 
+import com.baverty.webcompiler.configuration.DockerHostConfiguration;
 import com.baverty.webcompiler.test.utils.AnswerWithSelf;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
@@ -44,6 +45,9 @@ public class DockerManagementServiceTest {
 	/** Mock of the Tcp Service */
 	@Mock
 	private TcpService tcpService;
+	
+	@Mock 
+	private DockerHostConfiguration dockerConfig;
 
 	// Test constants / dummy values
 	private static final String containerId = "mockContainerId";
@@ -91,6 +95,9 @@ public class DockerManagementServiceTest {
 			// Use self returning answer to mock the chaining used by the API
 			ExecCreateCmdResponse resp = mock(ExecCreateCmdResponse.class);
 			when(resp.getId()).thenReturn("");
+			
+			// Mock access to properties
+			when(dockerConfig.getAddress()).thenReturn(containerHost);
 
 			ExecCreateCmd createCmd = mock(ExecCreateCmd.class, new AnswerWithSelf(ExecCreateCmd.class));
 			when(createCmd.exec()).thenReturn(resp);
