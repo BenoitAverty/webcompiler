@@ -4,7 +4,7 @@ TARGET_PACKAGE=$WORKSPACE/exec/webcompiler-0.0.1-SNAPSHOT.war
 JAVA=$(which java)
 ARGS="-jar $TARGET_PACKAGE --spring.profiles.active=prod"
 COMMAND="$JAVA $ARGS"
-PID=$(ps -ef | grep '$COMMAND' | grep -v grep | tr -s " " | cut -f2 -d" ")
+PID=$(ps -ef | grep "$COMMAND" | grep -v grep | tr -s " " | cut -f2 -d" ")
 
 # Stop application
 [[ ! -z "$PID" ]] && curl -X POST http://localhost:8086/manage/shutdown
